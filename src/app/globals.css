@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 210 33% 98%;
-    --foreground: 240 3% 15%;
+    --foreground: 240 3% 18%;
 
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
@@ -13,11 +13,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 240 3% 15%;
+    --primary: 240 3% 18%;
     --primary-foreground: 210 20% 98%;
 
     --secondary: 222 47% 17%;
     --secondary-foreground: 210 33% 98%;
+
+    --neutral: 240 5% 96%;
 
     --muted: 220 14.3% 95.9%;
     --muted-foreground: 220 8.9% 46.1%;
@@ -64,4 +66,10 @@
     --input: 215 27.9% 16.9%;
     --ring: 216 12.2% 83.9%;
   }
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
 }

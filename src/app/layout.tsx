@@ -21,9 +21,9 @@ export default function RootLayout({
             lang="en"
             className={cn("antialiased", inter.className)}
         >
-            <body className="bg-background text-foreground min-h-screen">
+            <body className="min-h-screen bg-background text-foreground">
                 <Header />
-                <main className="container">{children}</main>
+                <main className="container ">{children}</main>
             </body>
         </html>
     )
