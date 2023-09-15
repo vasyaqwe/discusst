@@ -9,7 +9,7 @@ export function Header() {
             <div className="container flex items-center justify-between">
                 <Link
                     href={"/"}
-                    className="flex items-center gap-2 font-semibold"
+                    className="flex items-center gap-2 text-xl font-semibold"
                 >
                     <Image
                         src={logo}
