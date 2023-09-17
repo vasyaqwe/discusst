@@ -5,6 +5,7 @@ import { Inter } from "next/font/google"
 import { Header } from "@/components/layout/header"
 import { TanstackProvider } from "@/components/tanstack-provider"
 import { Toaster } from "@/components/ui/toaster"
+import SessionProvider from "@/components/session-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,10 +25,12 @@ export default function RootLayout({
             className={cn("antialiased", inter.className)}
         >
             <body className="min-h-screen bg-background text-foreground">
-                <TanstackProvider>
-                    <Header />
-                    <main className="container">{children}</main>
-                </TanstackProvider>
+                <SessionProvider>
+                    <TanstackProvider>
+                        <Header />
+                        <main className="container">{children}</main>
+                    </TanstackProvider>
+                </SessionProvider>
                 <Toaster />
             </body>
         </html>
