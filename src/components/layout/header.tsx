@@ -1,15 +1,15 @@
-"use client"
 import Link from "next/link"
 import logo from "@public/logo.svg"
 import Image from "next/image"
-import { Button, buttonVariants } from "../ui/button"
-import { signOut, useSession } from "next-auth/react"
+import { Button } from "../ui/button"
+import { getServerSession } from "next-auth"
+import { AccountMenu } from "../ui/account-menu"
 
-export function Header() {
-    const { data: session } = useSession()
+export async function Header() {
+    const session = await getServerSession()
 
     return (
-        <header className="fixed left-0 top-0 z-10 w-full border-b bg-neutral py-3">
+        <header className="fixed left-0 top-0 z-10 w-full border-b bg-neutral py-3 ">
             <div className="container flex items-center justify-between">
                 <Link
                     href={"/"}
@@ -21,20 +21,12 @@ export function Header() {
                     />
                     Discusst
                 </Link>
-                {session ? (
-                    <Button
-                        onClick={() => signOut()}
-                        className={buttonVariants()}
-                    >
-                        Sign out
-                    </Button>
+                {session?.user ? (
+                    <AccountMenu user={session.user} />
                 ) : (
-                    <Link
-                        href={"/sign-in"}
-                        className={buttonVariants()}
-                    >
-                        Sign in
-                    </Link>
+                    <Button asChild>
+                        <Link href={"/sign-in"}>Sign in</Link>
+                    </Button>
                 )}
             </div>
         </header>
