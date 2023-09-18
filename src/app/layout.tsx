@@ -26,11 +26,11 @@ export default function RootLayout({
             lang="en"
             className={cn("antialiased", inter.className)}
         >
-            <body className="min-h-screen bg-background text-foreground">
+            <body className="min-h-screen bg-background text-foreground [--header-height:68px]">
                 <SessionProvider>
                     <TanstackProvider>
                         <Header />
-                        <main className="container">
+                        <main className="container mt-[calc(var(--header-height)+2rem)]">
                             {authDialog}
                             {children}
                         </main>
