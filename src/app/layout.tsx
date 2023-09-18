@@ -16,8 +16,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
+    authDialog,
 }: {
     children: React.ReactNode
+    authDialog: React.ReactNode
 }) {
     return (
         <html
@@ -28,7 +30,10 @@ export default function RootLayout({
                 <SessionProvider>
                     <TanstackProvider>
                         <Header />
-                        <main className="container">{children}</main>
+                        <main className="container">
+                            {authDialog}
+                            {children}
+                        </main>
                     </TanstackProvider>
                 </SessionProvider>
                 <Toaster />

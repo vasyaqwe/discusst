@@ -1,12 +1,14 @@
+"use client"
+
 import Link from "next/link"
 import logo from "@public/logo.svg"
 import Image from "next/image"
 import { Button } from "../ui/button"
-import { getServerSession } from "next-auth"
 import { AccountMenu } from "../ui/account-menu"
+import { useSession } from "next-auth/react"
 
-export async function Header() {
-    const session = await getServerSession()
+export function Header() {
+    const { data: session } = useSession()
 
     return (
         <header className="fixed left-0 top-0 z-10 w-full border-b bg-neutral py-3 ">

@@ -19,7 +19,7 @@ type AccountMenuProps = {
 export function AccountMenu({ user }: AccountMenuProps) {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full">
+            <DropdownMenuTrigger className="rounded-full transition-opacity hover:opacity-75 ">
                 <UserAvatar user={user} />
             </DropdownMenuTrigger>
             <DropdownMenuContent

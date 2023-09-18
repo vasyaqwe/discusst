@@ -1,11 +1,13 @@
-import { User } from "next-auth"
-import { Avatar, AvatarFallback } from "./avatar"
+"use client"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Image from "next/image"
 import { AvatarProps } from "@radix-ui/react-avatar"
+import { User } from "next-auth"
 
 type UserAvatarProps = { user: User } & AvatarProps
 
-export async function UserAvatar({ user, ...props }: UserAvatarProps) {
+export function UserAvatar({ user, ...props }: UserAvatarProps) {
     return (
         <Avatar {...props}>
             {user.image ? (
