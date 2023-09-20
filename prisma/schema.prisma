@@ -63,7 +63,7 @@ model Community {
   updateAt  DateTime @updatedAt
   posts     Post[]
 
-  author   User   @relation("CreatedBy", fields: [authorId], references: [id])
+  author   User   @relation("CreatedBy", fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
 
   subscribers Subscription[]
@@ -93,9 +93,9 @@ model Post {
   content     Json?
   createdAt   DateTime   @default(now())
   updateAt    DateTime   @updatedAt
-  community   Community  @relation(fields: [communityId], references: [id])
+  community   Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId String
-  author      User       @relation(fields: [authorId], references: [id])
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId    String
   comments    Comment[]
   votes       PostVote[]
@@ -122,9 +122,9 @@ model Comment {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
-  post     Post   @relation(fields: [postId], references: [id])
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId   String
 
   replyToId String?
