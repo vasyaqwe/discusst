@@ -72,9 +72,9 @@ model Community {
 }
 
 model Subscription {
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
-  community   Community @relation(fields: [communityId], references: [id])
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId String
 
   @@id([userId, communityId])
@@ -105,9 +105,9 @@ model Post {
 }
 
 model PostVote {
-  author   User     @relation(fields: [authorId], references: [id])
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
-  post     Post     @relation(fields: [postId], references: [id])
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId   String
   type     VoteType
 
@@ -139,9 +139,9 @@ model Comment {
 }
 
 model CommentVote {
-  author    User    @relation(fields: [authorId], references: [id])
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
-  comment   Comment @relation(fields: [commentId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
 
   type VoteType
