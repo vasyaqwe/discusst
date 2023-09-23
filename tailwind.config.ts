@@ -8,18 +8,14 @@ module.exports = {
         "./src/**/*.{ts,tsx}",
     ],
     theme: {
-        screens: {
-            xs: "456px",
-        },
         container: {
             center: true,
             padding: "1rem",
-            screens: {
-                xs: "456px",
-                "2xl": "1400px",
-            },
         },
         extend: {
+            screens: {
+                xs: "456px",
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",

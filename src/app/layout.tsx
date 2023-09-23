@@ -30,13 +30,13 @@ export default function RootLayout({
                 <SessionProvider>
                     <TanstackProvider>
                         <Header />
-                        <main className="container mt-[calc(var(--header-height)+2rem)]">
+                        <main className="md:pt-[calc(var(--header-height)+4rem)] container pt-[calc(var(--header-height)+2rem)]">
                             {authDialog}
                             {children}
+                            <Toaster />
                         </main>
                     </TanstackProvider>
                 </SessionProvider>
-                <Toaster />
             </body>
         </html>
     )
