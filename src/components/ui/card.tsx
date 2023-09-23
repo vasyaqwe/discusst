@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
 
-type CardProps = {
+export type CardProps = {
     asChild?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 

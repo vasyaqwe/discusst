@@ -1,3 +1,4 @@
+import { CreatePostCta } from "@/components/create-post-cta"
 import { getAuthSession } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
@@ -27,5 +28,13 @@ export default async function Page({ params: { slug } }: PageProps) {
 
     if (!community) notFound()
 
-    return <h1 className="text-4xl font-bold">c/{community.name}</h1>
+    return (
+        <>
+            <h1 className="text-4xl font-bold">c/{community.name}</h1>
+            <CreatePostCta
+                className="mt-5"
+                session={session}
+            />
+        </>
+    )
 }

@@ -5,10 +5,14 @@ import Image from "next/image"
 import { AvatarProps } from "@radix-ui/react-avatar"
 import { User } from "next-auth"
 
-type UserAvatarProps = { user: User } & AvatarProps
+type UserAvatarProps = { user: User | undefined } & AvatarProps
 
 export function UserAvatar({ user, ...props }: UserAvatarProps) {
-    return (
+    return !user ? (
+        <Avatar {...props}>
+            <AvatarFallback>G</AvatarFallback>
+        </Avatar>
+    ) : (
         <Avatar {...props}>
             {user.image ? (
                 <Image

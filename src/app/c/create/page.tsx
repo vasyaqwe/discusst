@@ -59,11 +59,11 @@ export default function Page() {
     })
 
     return (
-        <div className="mx-auto max-w-lg">
+        <>
             <h1 className="text-3xl font-bold">New Community</h1>
             <Card
                 asChild
-                className="md:mt-10 mt-5 "
+                className="mt-5 md:mt-10 "
             >
                 <form
                     onSubmit={(e) => {
@@ -115,6 +115,6 @@ export default function Page() {
                     </div>
                 </form>
             </Card>
-        </div>
+        </>
     )
 }
