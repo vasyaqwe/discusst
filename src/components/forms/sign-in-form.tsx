@@ -11,7 +11,7 @@ import logo from "@public/logo.svg"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
-type AuthFormProps = React.ComponentProps<"div"> & { className?: string }
+type AuthFormProps = React.ComponentProps<"div">
 
 export function SignInForm({ className, ...rest }: AuthFormProps) {
     const { toast } = useToast()

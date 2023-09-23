@@ -1,8 +1,6 @@
-type spinnerProps = {
-    className?: string
-} & React.ComponentProps<"svg">
+type SpinnerProps = React.ComponentProps<"svg">
 
-export function Spinner({ className, ...rest }: spinnerProps) {
+export function Spinner({ className, ...rest }: SpinnerProps) {
     return (
         <svg
             aria-hidden="true"
