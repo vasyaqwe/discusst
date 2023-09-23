@@ -30,11 +30,7 @@ export default async function Page({ params: { slug } }: PageProps) {
 
     return (
         <>
-            <h1 className="text-4xl font-bold">c/{community.name}</h1>
-            <CreatePostCta
-                className="mt-5"
-                session={session}
-            />
+            <CreatePostCta session={session} />
         </>
     )
 }
