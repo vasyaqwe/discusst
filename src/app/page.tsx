@@ -7,14 +7,14 @@ export default function Home() {
     return (
         <>
             <h1 className="text-3xl font-bold">Your feed</h1>
-            <Card className="mt-5 overflow-hidden p-0 md:mt-10">
-                <div className="bg-accent p-5 lg:p-7">
+            <Card className="mt-5 overflow-hidden p-0 md:mt-10 md:p-0">
+                <div className="bg-accent p-5 lg:p-6">
                     <h2 className="text-accent-foreground">
                         <HomeIcon className="inline " />{" "}
                         <span className="align-middle">Home</span>
                     </h2>
                 </div>
-                <div className="p-5">
+                <div className="p-5 lg:p-6">
                     <p>
                         Welcome to the homepage. Check in with your favorite
                         communities here.

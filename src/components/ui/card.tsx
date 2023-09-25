@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
 
@@ -10,7 +12,7 @@ export function Card({ asChild = false, className, ...props }: CardProps) {
 
     return (
         <Comp
-            className={cn("rounded-xl border bg-card p-5", className)}
+            className={cn("rounded-xl border bg-card p-3 md:p-5", className)}
             {...props}
         />
     )

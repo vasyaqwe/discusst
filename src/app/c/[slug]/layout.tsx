@@ -49,7 +49,7 @@ export default async function Layout({
 
     const isSubscribed = !!subscription
 
-    const membersCount = db.subscription.count({
+    const membersCount = await db.subscription.count({
         where: {
             community: {
                 name: slug,
@@ -66,29 +66,41 @@ export default async function Layout({
                 </div>
                 <Card
                     asChild
-                    className="overflow-hidden p-0"
+                    className="overflow-hidden p-0 md:p-0"
                 >
                     <aside className="hidden md:block">
-                        <div className="bg-accent p-5 lg:p-7">
+                        <div className="bg-accent p-5 lg:p-6">
                             <h2 className="text-xl text-accent-foreground">
                                 About c/{community.name}
                             </h2>
                         </div>
-                        <div className="divide-y p-5 lg:p-7">
-                            <p className="flex justify-between pb-4">
-                                <span className="text-primary/60">Created</span>{" "}
-                                {formatDate(community.createdAt)}
-                            </p>
-                            <p className="flex justify-between py-4">
-                                <span className="text-primary/60">Members</span>{" "}
-                                {membersCount}
-                            </p>
+                        <div className="p-5 lg:p-7">
+                            <div className="divide-y">
+                                <p className="flex justify-between pb-4">
+                                    <span className="text-primary/60">
+                                        Created
+                                    </span>{" "}
+                                    {formatDate(community.createdAt)}
+                                </p>
+                                <p className="flex justify-between py-4">
+                                    <span className="text-primary/60">
+                                        Members
+                                    </span>{" "}
+                                    {membersCount}
+                                </p>
+                            </div>
                             {community.authorId === session?.user.id ? (
                                 <p className="pt-4 text-primary/60">
                                     You created this community.
                                 </p>
                             ) : (
-                                <JoinCommunityToggle />
+                                <JoinCommunityToggle
+                                    className="mt-2"
+                                    session={session}
+                                    communityId={community.id}
+                                    communityName={community.name}
+                                    isSubscribed={isSubscribed}
+                                />
                             )}
                         </div>
                     </aside>

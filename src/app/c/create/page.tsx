@@ -40,6 +40,7 @@ export default function Page() {
                         variant: "destructive",
                     })
                 }
+
                 toast({
                     title: "An unknown error occured.",
                     description: "Could not create community.",

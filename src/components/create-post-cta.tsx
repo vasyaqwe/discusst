@@ -24,7 +24,7 @@ export function CreatePostCta({
 
     return (
         <Card
-            className={cn("flex items-center gap-3", className)}
+            className={cn("flex items-center gap-2 md:gap-3", className)}
             {...rest}
         >
             <UserAvatar user={session?.user} />
