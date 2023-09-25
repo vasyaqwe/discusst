@@ -1,3 +1,4 @@
+import { Editor } from "@/components/ui/editor"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 
@@ -11,5 +12,5 @@ export default async function Page({ params: { slug } }: PageProps) {
 
     if (!community) notFound()
 
-    return <div>page</div>
+    return <Editor communityId={community.id} />
 }

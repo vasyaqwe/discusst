@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 210 33% 98%;
-    --foreground: 240 3% 14%;
+    --foreground: var(--primary);
 
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
@@ -22,7 +22,7 @@
     --neutral: 240 5% 98%;
 
     --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
+    --muted-foreground: 220 8.9% 60%;
 
     --accent: 240 5% 96%;
     --accent-foreground: 220.9 39.3% 11%;
@@ -66,6 +66,106 @@
     --input: 215 27.9% 16.9%;
     --ring: 216 12.2% 83.9%;
   }
+}
+
+.dark .ce-block--selected .ce-block__content,
+.dark .ce-inline-toolbar,
+.dark .codex-editor--narrow .ce-toolbox,
+.dark .ce-conversion-toolbar,
+.dark .ce-settings,
+.dark .ce-settings__button,
+.dark .ce-toolbar__settings-btn,
+.dark .cdx-button,
+.dark .ce-popover,
+.dark .ce-toolbar__plus:hover {
+  background: theme('colors.popover.DEFAULT');
+  color: inherit;
+  border-color: theme('colors.border');
+}
+
+.dark .ce-inline-tool,
+.dark .ce-conversion-toolbar__label,
+.dark .ce-toolbox__button,
+.dark .cdx-settings-button,
+.dark .ce-toolbar__plus {
+  color: inherit;
+}
+
+.dark .ce-popover__item-icon,
+.dark .ce-conversion-tool__icon {
+  background-color: theme('colors.muted.DEFAULT');
+  box-shadow: none;
+}
+
+.dark .cdx-search-field {
+  border-color: theme('colors.border');
+  background: theme('colors.input');
+  color: inherit;
+}
+
+.dark ::selection {
+  background: theme('colors.accent.DEFAULT');
+}
+
+.dark .cdx-settings-button:hover,
+.dark .ce-settings__button:hover,
+.dark .ce-toolbox__button--active,
+.dark .ce-toolbox__button:hover,
+.dark .cdx-button:hover,
+.dark .ce-inline-toolbar__dropdown:hover,
+.dark .ce-inline-tool:hover,
+.dark .ce-popover__item:hover,
+.dark .ce-conversion-tool:hover,
+.dark .ce-toolbar__settings-btn:hover {
+  background-color: theme('colors.accent.DEFAULT');
+  color: theme('colors.accent.foreground');
+}
+
+.dark .cdx-notify--error {
+  background: theme('colors.destructive.DEFAULT') !important;
+}
+
+.dark .cdx-notify__cross::after,
+.dark .cdx-notify__cross::before {
+  background: white;
+}
+
+.codex-editor__redactor {
+  padding-bottom: 0 !important;
+}
+
+#editor textarea:focus-visible,
+#editor input:focus-visible,
+.cdx-input:focus-visible {
+  outline: 1px solid hsl(var(--ring));
+}
+
+#editor textarea,
+.cdx-input {
+  border-radius: var(--radius);
+}
+
+#editor textarea:focus-visible,
+.cdx-input:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.cdx-block.ce-code {
+  margin-left: .25rem;
+}
+
+.cdx-button {
+  border-radius: var(--radius);
+}
+
+.image-tool__image-preloader::after {
+  border-top-color: hsl(240 3% 18%) !important;
+}
+
+.image-tool__image {
+  overflow: hidden;
+  border-radius: .75rem !important;
 }
 
 h1,

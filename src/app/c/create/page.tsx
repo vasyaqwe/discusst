@@ -42,13 +42,16 @@ export default function Page() {
                 }
 
                 toast({
-                    title: "An unknown error occured.",
+                    title: "Something went wrong.",
                     description: "Could not create community.",
                     variant: "destructive",
                 })
             },
             onSuccess: (communityName) => {
                 router.push(`/c/${communityName}`)
+                toast({
+                    title: "Community created.",
+                })
             },
         }
     )

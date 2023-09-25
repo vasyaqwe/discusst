@@ -1,7 +1,12 @@
 import * as z from "zod"
 
 export const communitySchema = z.object({
-    name: z.string().min(3).max(18),
+    name: z
+        .string()
+        .min(3, { message: "Name must contain at least 3 character(s)" })
+        .max(18, {
+            message: "Name must not contain more than 18 character(s)",
+        }),
 })
 
 export const communitySubscriptionSchema = z.object({
