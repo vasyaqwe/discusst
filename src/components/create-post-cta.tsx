@@ -30,7 +30,7 @@ export function CreatePostCta({
             <UserAvatar user={session?.user} />
             <Input
                 onClick={() => router.push(`${pathname}/submit`)}
-                placeholder="Create post"
+                placeholder="New post"
             />
             <Button
                 asChild

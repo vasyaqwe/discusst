@@ -79,8 +79,7 @@ export function JoinCommunityToggle({
             }}
             {...props}
         >
-            {isLoading && <Spinner />}
-            Leave community
+            {isLoading ? <Spinner /> : "Leave community"}
         </Button>
     ) : (
         <Button
@@ -94,8 +93,7 @@ export function JoinCommunityToggle({
             }}
             {...props}
         >
-            {isLoading && <Spinner />}
-            Join community
+            {isLoading ? <Spinner /> : "Join community"}
         </Button>
     )
 }

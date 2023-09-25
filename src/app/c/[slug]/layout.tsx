@@ -95,7 +95,7 @@ export default async function Layout({
                                 </p>
                             ) : (
                                 <JoinCommunityToggle
-                                    className="mt-2"
+                                    className="mt-2 w-full"
                                     session={session}
                                     communityId={community.id}
                                     communityName={community.name}
