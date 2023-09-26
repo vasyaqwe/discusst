@@ -1,3 +1,4 @@
+import { PostFeed } from "@/components/post-feed"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { HomeIcon } from "lucide-react"
@@ -27,6 +28,7 @@ export default function Home() {
                     </Button>
                 </div>
             </Card>
+            {/* <PostFeed /> */}
         </>
     )
 }

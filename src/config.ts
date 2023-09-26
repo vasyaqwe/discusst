@@ -1,0 +1,1 @@
+export const POSTS_INFINITE_SCROLL_COUNT = 3

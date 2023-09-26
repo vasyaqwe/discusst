@@ -4,11 +4,11 @@ import { usePathname, useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
 import { Button } from "./button"
 
-type CommunityTitleProps = {
+type CommunityHeaderProps = {
     name: string
 }
 
-export function CommunityTitle({ name }: CommunityTitleProps) {
+export function CommunityHeader({ name }: CommunityHeaderProps) {
     const pathname = usePathname()
     const router = useRouter()
 
@@ -16,15 +16,17 @@ export function CommunityTitle({ name }: CommunityTitleProps) {
 
     return (
         <>
-            <Button
-                role="link"
-                className="mb-3"
-                variant={"link"}
-                onClick={() => router.back()}
-            >
-                <ChevronLeft />
-                Back
-            </Button>
+            {afterSlash && (
+                <Button
+                    role="link"
+                    className="mb-3"
+                    variant={"link"}
+                    onClick={() => router.back()}
+                >
+                    <ChevronLeft size={18} />
+                    Back to community
+                </Button>
+            )}
             <h1 className="text-4xl font-bold">
                 c/{name}
                 <span className="text-lg font-semibold opacity-50">

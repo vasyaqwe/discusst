@@ -4,20 +4,20 @@ import TextareaAutosize from "react-textarea-autosize"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type EditorJS from "@editorjs/editorjs"
 import { uploadFiles } from "@/lib/uploadthing"
-import { Card } from "./card"
 import { CreatePostPayload, postSchema } from "@/lib/validations/post"
 import { useFormValidation } from "@/hooks/use-form-validation"
-import { ErrorMessage } from "./input"
-import { Button } from "./button"
 import { useMutation } from "@tanstack/react-query"
 import axios, { AxiosError } from "axios"
 import { toast } from "@/hooks/use-toast"
 import { usePathname, useRouter } from "next/navigation"
-import { Spinner } from "./spinner"
+import { Button } from "../ui/button"
+import { Card } from "../ui/card"
+import { Spinner } from "../ui/spinner"
+import { ErrorMessage } from "../ui/input"
 
-type EditorProps = { communityId: string }
+type CreatePostFormProps = { communityId: string }
 
-export function Editor({ communityId }: EditorProps) {
+export function CreatePostForm({ communityId }: CreatePostFormProps) {
     const [formData, setFormData] = useState<CreatePostPayload>({
         title: "",
         communityId,

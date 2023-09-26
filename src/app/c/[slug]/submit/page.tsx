@@ -1,4 +1,4 @@
-import { Editor } from "@/components/ui/editor"
+import { CreatePostForm } from "@/components/forms/create-post-form"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 
@@ -12,5 +12,5 @@ export default async function Page({ params: { slug } }: PageProps) {
 
     if (!community) notFound()
 
-    return <Editor communityId={community.id} />
+    return <CreatePostForm communityId={community.id} />
 }

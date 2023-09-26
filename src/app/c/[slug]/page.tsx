@@ -1,4 +1,6 @@
 import { CreatePostCta } from "@/components/create-post-cta"
+import { PostFeed } from "@/components/post-feed"
+import { POSTS_INFINITE_SCROLL_COUNT } from "@/config"
 import { getAuthSession } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
@@ -22,6 +24,10 @@ export default async function Page({ params: { slug } }: PageProps) {
                     comments: true,
                     community: true,
                 },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: POSTS_INFINITE_SCROLL_COUNT,
             },
         },
     })
@@ -31,6 +37,10 @@ export default async function Page({ params: { slug } }: PageProps) {
     return (
         <>
             <CreatePostCta session={session} />
+            <PostFeed
+                initialPosts={community.posts}
+                communityName={community.name}
+            />
         </>
     )
 }
