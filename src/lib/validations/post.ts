@@ -11,4 +11,10 @@ export const postSchema = z.object({
     content: z.any(),
 })
 
+export const postsQuerySchema = z.object({
+    limit: z.string(),
+    page: z.string(),
+    communityName: z.string().optional(),
+})
+
 export type CreatePostPayload = z.infer<typeof postSchema>

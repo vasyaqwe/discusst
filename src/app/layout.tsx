@@ -30,7 +30,7 @@ export default function RootLayout({
                 <SessionProvider>
                     <TanstackProvider>
                         <Header />
-                        <main className="md:pt-[calc(var(--header-height)+4rem)] container pt-[calc(var(--header-height)+2rem)]">
+                        <main className="container pb-16 pt-[calc(var(--header-height)+2rem)] md:pt-[calc(var(--header-height)+4rem)]">
                             {authDialog}
                             {children}
                             <Toaster />

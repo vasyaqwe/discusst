@@ -67,7 +67,7 @@ export default async function Layout({
                 </div>
                 <Card
                     asChild
-                    className="overflow-hidden p-0 md:p-0"
+                    className="self-start overflow-hidden p-0 md:p-0"
                 >
                     <aside className="hidden md:block">
                         <div className="bg-accent p-5 lg:p-6">

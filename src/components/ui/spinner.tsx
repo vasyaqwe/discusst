@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils"
+
 type SpinnerProps = React.ComponentProps<"svg">
 
 export function Spinner({ className, ...rest }: SpinnerProps) {
@@ -5,7 +7,7 @@ export function Spinner({ className, ...rest }: SpinnerProps) {
         <svg
             aria-hidden="true"
             role="status"
-            className="inline h-5 w-5 animate-spin"
+            className={cn("inline h-5 w-5 animate-spin", className)}
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

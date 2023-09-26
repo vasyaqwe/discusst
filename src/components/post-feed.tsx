@@ -6,8 +6,9 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useSession } from "next-auth/react"
 import { useEffect } from "react"
-import { Post } from "./post"
+import { Post, PostSkeleton } from "./post"
 import { POSTS_INFINITE_SCROLL_COUNT } from "@/config"
+import { Spinner } from "./ui/spinner"
 
 type PostFeedProps = {
     communityName?: string
@@ -15,10 +16,6 @@ type PostFeedProps = {
 }
 
 export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
-    const { ref, entry } = useIntersection({
-        threshold: 1,
-    })
-
     const { data: session } = useSession()
 
     const { isLoading, data, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -26,58 +23,67 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
             ["posts"],
             async ({ pageParam = 1 }) => {
                 const query =
-                    `/api/posts/?limit=${POSTS_INFINITE_SCROLL_COUNT}&page=${pageParam}` +
-                    !!communityName
-                        ? `&communityName=${communityName}`
-                        : ""
+                    `/api/posts?limit=${POSTS_INFINITE_SCROLL_COUNT}&page=${pageParam}` +
+                    (!!communityName ? `&communityName=${communityName}` : "")
 
                 const { data } = await axios.get(query)
 
                 return data as ExtendedPost[]
             },
             {
-                getNextPageParam: (_, pages) => {
-                    return pages.length + 1
+                refetchInterval: 70000,
+                getNextPageParam: (lastPage, allPages) => {
+                    return lastPage.length ? allPages.length + 1 : undefined
                 },
             }
         )
 
-    // useEffect(() => {
-    //     if (entry?.isIntersecting && hasNextPage) fetchNextPage()
-    // }, [entry, hasNextPage, fetchNextPage])
+    const { ref, entry } = useIntersection({
+        threshold: 0,
+        isLoading,
+    })
+
+    useEffect(() => {
+        if (entry?.isIntersecting && hasNextPage) fetchNextPage()
+    }, [entry, hasNextPage, fetchNextPage])
 
     const posts = data?.pages.flatMap((page) => page) ?? initialPosts
 
     return (
         <>
-            {posts?.map((post, idx) => {
-                const votesAmount = post.votes.reduce((acc, currVote) => {
-                    if (currVote.type === "UP") return acc + 1
-                    if (currVote.type === "DOWN") return acc - 1
-                    return acc
-                }, 0)
+            {isLoading
+                ? Array(POSTS_INFINITE_SCROLL_COUNT)
+                      .fill("")
+                      .map((_, idx) => <PostSkeleton key={idx} />)
+                : posts?.map((post, idx) => {
+                      const votesAmount = post.votes.reduce((acc, currVote) => {
+                          if (currVote.type === "UP") return acc + 1
+                          if (currVote.type === "DOWN") return acc - 1
+                          return acc
+                      }, 0)
 
-                const alreadyVoted = post.votes.some(
-                    (vote) => vote.authorId === session?.user.id
-                )
+                      const alreadyVoted = post.votes.some(
+                          (vote) => vote.authorId === session?.user.id
+                      )
 
-                if (idx === posts.length - 1) {
-                    return (
-                        <Post
-                            key={post.id}
-                            ref={ref}
-                            post={post}
-                        />
-                    )
-                }
+                      if (idx === posts.length - 1) {
+                          return (
+                              <Post
+                                  key={post.id}
+                                  ref={ref}
+                                  post={post}
+                              />
+                          )
+                      }
 
-                return (
-                    <Post
-                        key={post.id}
-                        post={post}
-                    />
-                )
-            })}
+                      return (
+                          <Post
+                              key={post.id}
+                              post={post}
+                          />
+                      )
+                  })}
+            {isFetchingNextPage && <Spinner className="mx-auto" />}
         </>
     )
 }
