@@ -11,7 +11,7 @@ export function Header() {
     const { data: session } = useSession()
 
     return (
-        <header className="fixed left-0 top-0 z-10 h-[var(--header-height)] w-full border-b bg-neutral ">
+        <header className="fixed left-0 top-0 z-10 h-[var(--header-height)] w-full border-b bg-neutral/50 backdrop-blur-md">
             <div className="container flex h-[var(--header-height)] items-center justify-between">
                 <Link
                     href={"/"}

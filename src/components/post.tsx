@@ -1,25 +1,68 @@
+"use client"
+
 import { ExtendedPost } from "@/types"
-import { forwardRef, useRef } from "react"
+import { forwardRef, startTransition, useRef } from "react"
 import { Card } from "./ui/card"
 import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
-import { MessageSquare } from "lucide-react"
+import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Skeleton } from "./ui/skeleton"
 import { UserAvatar } from "./ui/user-avatar"
+import { Toggle } from "./ui/toggle"
+import { useSession } from "next-auth/react"
+import { useMutation } from "@tanstack/react-query"
+import { PostVotePayload } from "@/lib/validations/post"
+import { VoteType } from "@prisma/client"
+import axios from "axios"
 
 type PostProps = {
     post: ExtendedPost
 } & React.ComponentPropsWithRef<"article">
 
 const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
+    const { data: session } = useSession()
+    const router = useRouter()
+
     const communityName = post.community.name
+
+    const votesAmount = post.votes.reduce((acc, currVote) => {
+        if (currVote.type === "UP") return acc + 1
+        if (currVote.type === "DOWN") return acc - 1
+        return acc
+    }, 0)
+
+    const existingVote = post.votes.find(
+        (vote) => vote.authorId === session?.user.id
+    )
 
     const contentRef = useRef<HTMLDivElement>(null)
 
-    const router = useRouter()
+    const { mutate: onVote } = useMutation(
+        async (voteType: VoteType) => {
+            const payload: PostVotePayload = {
+                postId: post.id,
+                voteType,
+            }
+
+            const { data } = await axios.patch(
+                "/api/community/post/vote",
+                payload
+            )
+
+            return data
+        },
+        {
+            onSuccess: () => {
+                startTransition(() => router.refresh())
+            },
+        }
+    )
+
+    const upVoted = existingVote && existingVote.type === "UP"
+    const downVoted = existingVote && existingVote.type === "DOWN"
 
     return (
         <Card
@@ -33,51 +76,92 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                 ref={ref}
                 key={post.id}
             >
-                <div className="space-y-3 p-5">
-                    <header>
-                        <Link
-                            className="underline hover:no-underline"
-                            href={`/c/${communityName}`}
+                <div className="flex gap-3 p-4">
+                    <div className="flex flex-col items-center gap-1">
+                        <Toggle
+                            data-state={upVoted ? "on" : "off"}
+                            onClick={(e) => {
+                                if (session) {
+                                    e.stopPropagation()
+                                    onVote("UP")
+                                } else {
+                                    router.push("/sign-up")
+                                }
+                            }}
+                            size={"sm"}
+                            className="flex-shrink-0"
                         >
-                            c/{communityName}
-                        </Link>{" "}
-                        •{" "}
-                        <span className="text-sm text-primary/50">
-                            Posted by u/{post.author.name}{" "}
-                            <UserAvatar
-                                user={post.author}
-                                className="mr-1 inline-block h-6 w-6 align-middle"
+                            <ArrowBigUp
+                                className={upVoted ? "stroke-accent" : ""}
                             />
-                            {formatRelativeDate(post.createdAt)}
-                        </span>
-                    </header>
-                    <h3 className="text-xl">{post.title}</h3>
-                    <div
-                        ref={contentRef}
-                        className="relative max-h-[200px] overflow-clip text-sm"
-                    >
-                        <EditorOutput
-                            renderers={{
-                                image: CustomImageRenderer,
-                                code: CustomCodeRenderer,
+                        </Toggle>
+                        {votesAmount}
+                        <Toggle
+                            data-state={downVoted ? "on" : "off"}
+                            onClick={(e) => {
+                                if (session) {
+                                    e.stopPropagation()
+                                    onVote("DOWN")
+                                } else {
+                                    router.push("/sign-up")
+                                }
                             }}
-                            style={{
-                                paragraph: {
-                                    fontSize: "0.875rem",
-                                    lineHeight: "1.2",
-                                },
-                            }}
-                            data={post.content}
-                        />
-                        {(contentRef.current?.clientHeight ?? 0) === 200 ? (
-                            <div
-                                aria-hidden={true}
-                                className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent"
+                            size={"sm"}
+                            className="flex-shrink-0"
+                        >
+                            <ArrowBigDown
+                                className={downVoted ? "stroke-secondary" : ""}
                             />
-                        ) : null}
+                        </Toggle>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="space-y-3">
+                            <header>
+                                <Link
+                                    className="underline hover:no-underline"
+                                    href={`/c/${communityName}`}
+                                >
+                                    c/{communityName}
+                                </Link>{" "}
+                                •{" "}
+                                <span className="text-sm text-primary/50">
+                                    Posted by u/{post.author.name}{" "}
+                                    <UserAvatar
+                                        user={post.author}
+                                        className="mr-1 inline-block h-6 w-6 align-middle"
+                                    />
+                                    {formatRelativeDate(post.createdAt)}
+                                </span>
+                            </header>
+                            <h3 className="text-xl">{post.title}</h3>
+                        </div>
+                        <div
+                            ref={contentRef}
+                            className="relative max-h-[200px] overflow-clip text-sm"
+                        >
+                            <EditorOutput
+                                renderers={{
+                                    image: CustomImageRenderer,
+                                    code: CustomCodeRenderer,
+                                }}
+                                style={{
+                                    paragraph: {
+                                        fontSize: "0.875rem",
+                                        lineHeight: "1.2",
+                                    },
+                                }}
+                                data={post.content}
+                            />
+                            {(contentRef.current?.clientHeight ?? 0) === 200 ? (
+                                <div
+                                    aria-hidden={true}
+                                    className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent"
+                                />
+                            ) : null}
+                        </div>
                     </div>
                 </div>
-                <div className="bg-accent px-5 py-4">
+                <div className="text-neutral-foreground bg-neutral px-4 py-3">
                     <Link
                         href={`/c/${communityName}/posts/${post.id}`}
                         className="flex items-center gap-2"
@@ -96,26 +180,34 @@ function PostSkeleton() {
     return (
         <Card
             asChild
-            className=" cursor-pointer overflow-hidden p-0 shadow-sm md:p-0"
+            className="overflow-hidden p-0 shadow-sm md:p-0"
         >
             <article>
-                <div className="space-y-5 p-5">
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-4 w-20 " /> •{" "}
-                        <Skeleton className="h-4 w-32 bg-muted/60" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-20 " />
+                <div className="flex gap-3 p-5">
+                    <div className="flex flex-col items-center gap-2">
+                        <Skeleton className="h-7 w-7 " />
+                        <Skeleton className="h-2 w-2 rounded-full" />
+                        <Skeleton className="h-7 w-7 " />
                     </div>
-                    <Skeleton className="h-5 w-1/2 bg-primary/20" />
+                    <div className="space-y-5 ">
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-4 w-20 " /> •{" "}
+                            <Skeleton className="h-4 w-32 bg-muted/60" />
+                            <Skeleton className="h-4 w-4 rounded-full" />
+                            <Skeleton className="h-4 w-20 " />
+                        </div>
+                        <Skeleton className="h-5 w-1/2 bg-primary/20" />
 
-                    <div className="space-y-3">
-                        <Skeleton className="h-4 w-[80%]" />
-                        <Skeleton className="h-4 w-[85%]" />
-                        <Skeleton className="h-4 w-[90%]" />
-                        <Skeleton className="h-4 w-[95%]" />
+                        <div className="space-y-3">
+                            <Skeleton className="h-4 w-[80%]" />
+                            <Skeleton className="h-4 w-[85%]" />
+                            <Skeleton className="h-4 w-[90%]" />
+                            <Skeleton className="h-4 w-[95%]" />
+                            <Skeleton className="h-4 w-[100%]" />
+                        </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 bg-accent p-5">
+                <div className="text-neutral-foreground flex items-center gap-2 bg-neutral p-5">
                     <MessageSquare />
                     <Skeleton className="h-4 w-40 bg-primary/20" />
                 </div>

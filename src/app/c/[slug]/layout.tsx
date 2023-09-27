@@ -70,8 +70,8 @@ export default async function Layout({
                     className="self-start overflow-hidden p-0 md:p-0"
                 >
                     <aside className="hidden md:block">
-                        <div className="bg-accent p-5 lg:p-6">
-                            <h2 className="text-xl text-accent-foreground">
+                        <div className="bg-neutral p-5 lg:p-6">
+                            <h2 className="text-neutral-foreground text-xl">
                                 About c/{community.name}
                             </h2>
                         </div>

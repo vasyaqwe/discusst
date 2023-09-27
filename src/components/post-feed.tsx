@@ -56,16 +56,6 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
                       .fill("")
                       .map((_, idx) => <PostSkeleton key={idx} />)
                 : posts?.map((post, idx) => {
-                      const votesAmount = post.votes.reduce((acc, currVote) => {
-                          if (currVote.type === "UP") return acc + 1
-                          if (currVote.type === "DOWN") return acc - 1
-                          return acc
-                      }, 0)
-
-                      const alreadyVoted = post.votes.some(
-                          (vote) => vote.authorId === session?.user.id
-                      )
-
                       if (idx === posts.length - 1) {
                           return (
                               <Post
