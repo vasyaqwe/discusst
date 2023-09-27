@@ -24,7 +24,6 @@ export function useIntersection({
 
         const observerParams = { threshold, root }
         const observer = new IntersectionObserver(updateEntry, observerParams)
-        console.log(ref?.current)
         observer.observe(node)
 
         return () => observer.disconnect()

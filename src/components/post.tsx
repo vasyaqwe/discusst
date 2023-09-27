@@ -1,7 +1,7 @@
 "use client"
 
 import { ExtendedPost } from "@/types"
-import { forwardRef, startTransition, useRef } from "react"
+import { forwardRef, startTransition, useRef, useState } from "react"
 import { Card } from "./ui/card"
 import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
@@ -13,16 +13,22 @@ import { Skeleton } from "./ui/skeleton"
 import { UserAvatar } from "./ui/user-avatar"
 import { Toggle } from "./ui/toggle"
 import { useSession } from "next-auth/react"
-import { useMutation } from "@tanstack/react-query"
+import {
+    InfiniteData,
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query"
 import { PostVotePayload } from "@/lib/validations/post"
-import { VoteType } from "@prisma/client"
+import { PostVote, VoteType } from "@prisma/client"
 import axios from "axios"
+import { toast } from "@/hooks/use-toast"
 
 type PostProps = {
     post: ExtendedPost
 } & React.ComponentPropsWithRef<"article">
 
 const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
+    const [canVote, setCanVote] = useState(true)
     const { data: session } = useSession()
     const router = useRouter()
 
@@ -40,6 +46,10 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
 
     const contentRef = useRef<HTMLDivElement>(null)
 
+    const queryClient = useQueryClient()
+
+    const queryKey = ["posts"]
+
     const { mutate: onVote } = useMutation(
         async (voteType: VoteType) => {
             const payload: PostVotePayload = {
@@ -47,16 +57,97 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                 voteType,
             }
 
-            const { data } = await axios.patch(
-                "/api/community/post/vote",
-                payload
-            )
-
-            return data
+            await axios.patch("/api/community/post/vote", payload)
         },
         {
+            onMutate: async (voteType: VoteType) => {
+                setCanVote(false)
+                setTimeout(() => {
+                    setCanVote(true)
+                }, 700)
+
+                // Stop the queries that may affect this operation
+                await queryClient.cancelQueries(queryKey)
+
+                const prevData =
+                    queryClient.getQueryData<InfiniteData<ExtendedPost[]>>(
+                        queryKey
+                    )
+
+                if (prevData) {
+                    const updatedVotes = (votes: PostVote[]): PostVote[] => {
+                        const existingPostVote = votes.find(
+                            (vote) =>
+                                vote.postId === post.id &&
+                                vote.authorId === session?.user.id
+                        )
+
+                        if (existingPostVote) {
+                            //delete vote if trying to vote again with the same type
+                            if (existingPostVote.type === voteType) {
+                                return votes.filter((vote) =>
+                                    vote.postId === post.id &&
+                                    vote.authorId === session?.user.id
+                                        ? undefined
+                                        : vote
+                                )
+                            }
+
+                            //if vote type is different, update with the new vote type
+                            return votes.map((vote) =>
+                                vote.postId === post.id &&
+                                vote.authorId === session?.user.id
+                                    ? { ...vote, type: voteType }
+                                    : vote
+                            )
+                        }
+
+                        return [
+                            ...votes,
+                            {
+                                postId: post.id,
+                                authorId: session?.user.id ?? "",
+                                type: voteType,
+                            },
+                        ]
+                    }
+
+                    queryClient.setQueryData<InfiniteData<ExtendedPost[]>>(
+                        queryKey,
+                        {
+                            ...prevData,
+                            pages: prevData.pages.map((page) =>
+                                page.map((queryPost) =>
+                                    queryPost.id === post.id
+                                        ? {
+                                              ...queryPost,
+                                              votes: updatedVotes(
+                                                  queryPost.votes
+                                              ),
+                                          }
+                                        : queryPost
+                                )
+                            ),
+                        }
+                    )
+                }
+
+                return {
+                    prevData,
+                }
+            },
+            onError: (_error, _postId, context) => {
+                toast({
+                    title: "There was an error",
+                    description: "Try again in a couple of seconds",
+                    variant: "destructive",
+                })
+                if (context?.prevData) {
+                    queryClient.setQueryData(queryKey, context.prevData)
+                }
+            },
             onSuccess: () => {
-                startTransition(() => router.refresh())
+                queryClient.invalidateQueries(queryKey)
             },
         }
     )
@@ -67,12 +158,9 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
     return (
         <Card
             asChild
-            className=" cursor-pointer overflow-hidden p-0 shadow-sm md:p-0"
+            className="overflow-hidden p-0 shadow-sm md:p-0"
         >
             <article
-                onClick={() =>
-                    router.push(`/c/${communityName}/posts/${post.id}`)
-                }
                 ref={ref}
                 key={post.id}
             >
@@ -80,10 +168,9 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                     <div className="flex flex-col items-center gap-1">
                         <Toggle
                             data-state={upVoted ? "on" : "off"}
-                            onClick={(e) => {
+                            onClick={() => {
                                 if (session) {
-                                    e.stopPropagation()
-                                    onVote("UP")
+                                    canVote && onVote("UP")
                                 } else {
                                     router.push("/sign-up")
                                 }
@@ -98,10 +185,9 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                         {votesAmount}
                         <Toggle
                             data-state={downVoted ? "on" : "off"}
-                            onClick={(e) => {
+                            onClick={() => {
                                 if (session) {
-                                    e.stopPropagation()
-                                    onVote("DOWN")
+                                    canVote && onVote("DOWN")
                                 } else {
                                     router.push("/sign-up")
                                 }
@@ -133,7 +219,13 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                                     {formatRelativeDate(post.createdAt)}
                                 </span>
                             </header>
-                            <h3 className="text-xl">{post.title}</h3>
+                            <h3 className="text-xl">
+                                <Link
+                                    href={`/c/${communityName}/posts/${post.id}`}
+                                >
+                                    {post.title}
+                                </Link>
+                            </h3>
                         </div>
                         <div
                             ref={contentRef}
@@ -161,7 +253,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                         </div>
                     </div>
                 </div>
-                <div className="text-neutral-foreground bg-neutral px-4 py-3">
+                <div className="bg-neutral px-4 py-3 text-neutral-foreground">
                     <Link
                         href={`/c/${communityName}/posts/${post.id}`}
                         className="flex items-center gap-2"
@@ -207,7 +299,7 @@ function PostSkeleton() {
                         </div>
                     </div>
                 </div>
-                <div className="text-neutral-foreground flex items-center gap-2 bg-neutral p-5">
+                <div className="flex items-center gap-2 bg-neutral p-5 text-neutral-foreground">
                     <MessageSquare />
                     <Skeleton className="h-4 w-40 bg-primary/20" />
                 </div>

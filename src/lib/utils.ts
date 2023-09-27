@@ -45,18 +45,18 @@ export const formatRelativeDate = (date: Date) => {
         return `${seconds} seconds ago`
     } else if (diff < 60 * 60 * 1000) {
         const minutes = Math.floor(diff / (60 * 1000))
-        return `${minutes} minutes ago`
+        return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`
     } else if (diff < 24 * 60 * 60 * 1000) {
         const hours = Math.floor(diff / (60 * 60 * 1000))
-        return `${hours} hours ago`
+        return `${hours} ${hours === 1 ? "hour" : "hours"} ago`
     } else if (diff < 30 * 24 * 60 * 60 * 1000) {
         const days = Math.floor(diff / (24 * 60 * 60 * 1000))
-        return `${days} days ago`
-    } else if (diff < 365 * 24 * 60 * 60 * 1000) {
-        const months = Math.floor(diff / (30 * 24 * 60 * 60 * 1000))
-        return `${months} months ago`
+        return `${days} ${days === 1 ? "day" : "days"} ago`
     } else {
-        const years = Math.floor(diff / (365 * 24 * 60 * 60 * 1000))
-        return `${years} years ago`
+        return new Intl.DateTimeFormat(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+        }).format(new Date(date))
     }
 }

@@ -4,7 +4,6 @@ import { useIntersection } from "@/hooks/use-intersection"
 import { ExtendedPost } from "@/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import axios from "axios"
-import { useSession } from "next-auth/react"
 import { useEffect } from "react"
 import { Post, PostSkeleton } from "./post"
 import { POSTS_INFINITE_SCROLL_COUNT } from "@/config"
@@ -16,8 +15,6 @@ type PostFeedProps = {
 }
 
 export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
-    const { data: session } = useSession()
-
     const { isLoading, data, hasNextPage, isFetchingNextPage, fetchNextPage } =
         useInfiniteQuery(
             ["posts"],
@@ -35,6 +32,7 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
                 getNextPageParam: (lastPage, allPages) => {
                     return lastPage.length ? allPages.length + 1 : undefined
                 },
+                initialData: { pages: [initialPosts], pageParams: [1] },
             }
         )
 

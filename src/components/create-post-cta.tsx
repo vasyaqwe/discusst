@@ -42,6 +42,7 @@ export function CreatePostCta({
                 </Link>
             </Button>
             <Button
+                asChild
                 variant={"ghost"}
                 size={"icon"}
             >
