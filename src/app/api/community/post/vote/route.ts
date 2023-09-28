@@ -21,6 +21,9 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         where: {
             id: postId,
         },
+        select: {
+            id: true,
+        },
     })
 
     if (!post) return new NextResponse("Post not found", { status: 404 })
@@ -29,6 +32,9 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         where: {
             authorId: session.user.id,
             postId,
+        },
+        select: {
+            type: true,
         },
     })
 

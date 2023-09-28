@@ -28,7 +28,6 @@ type PostProps = {
 } & React.ComponentPropsWithRef<"article">
 
 const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
-    const [canVote, setCanVote] = useState(true)
     const { data: session } = useSession()
     const router = useRouter()
 
@@ -61,11 +60,6 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
         },
         {
             onMutate: async (voteType: VoteType) => {
-                setCanVote(false)
-                setTimeout(() => {
-                    setCanVote(true)
-                }, 700)
-
                 // Stop the queries that may affect this operation
                 await queryClient.cancelQueries(queryKey)
 
@@ -170,7 +164,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                             data-state={upVoted ? "on" : "off"}
                             onClick={() => {
                                 if (session) {
-                                    canVote && onVote("UP")
+                                    onVote("UP")
                                 } else {
                                     router.push("/sign-up")
                                 }
@@ -187,7 +181,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                             data-state={downVoted ? "on" : "off"}
                             onClick={() => {
                                 if (session) {
-                                    canVote && onVote("DOWN")
+                                    onVote("DOWN")
                                 } else {
                                     router.push("/sign-up")
                                 }
