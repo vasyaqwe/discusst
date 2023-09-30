@@ -19,7 +19,7 @@ export const postVoteSchema = z.object({
 export const postsQuerySchema = z.object({
     limit: z.string(),
     page: z.string(),
-    communityName: z.string().optional(),
+    communityName: z.string().nullish().optional(),
 })
 
 export type PostVotePayload = z.infer<typeof postVoteSchema>

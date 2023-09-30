@@ -1,7 +1,7 @@
 "use client"
 
 import { ExtendedPost } from "@/types"
-import { forwardRef, startTransition, useRef, useState } from "react"
+import { forwardRef, useRef } from "react"
 import { Card } from "./ui/card"
 import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
@@ -13,21 +13,20 @@ import { Skeleton } from "./ui/skeleton"
 import { UserAvatar } from "./ui/user-avatar"
 import { Toggle } from "./ui/toggle"
 import { useSession } from "next-auth/react"
-import {
-    InfiniteData,
-    useMutation,
-    useQueryClient,
-} from "@tanstack/react-query"
-import { PostVotePayload } from "@/lib/validations/post"
-import { PostVote, VoteType } from "@prisma/client"
-import axios from "axios"
-import { toast } from "@/hooks/use-toast"
+import { VoteType } from "@prisma/client"
 
 type PostProps = {
     post: ExtendedPost
+    onVote: ({
+        voteType,
+        postId,
+    }: {
+        voteType: VoteType
+        postId: string
+    }) => void
 } & React.ComponentPropsWithRef<"article">
 
-const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
+const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
     const { data: session } = useSession()
     const router = useRouter()
 
@@ -44,107 +43,6 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
     )
 
     const contentRef = useRef<HTMLDivElement>(null)
-
-    const queryClient = useQueryClient()
-
-    const queryKey = ["posts"]
-
-    const { mutate: onVote } = useMutation(
-        async (voteType: VoteType) => {
-            const payload: PostVotePayload = {
-                postId: post.id,
-                voteType,
-            }
-
-            await axios.patch("/api/community/post/vote", payload)
-        },
-        {
-            onMutate: async (voteType: VoteType) => {
-                // Stop the queries that may affect this operation
-                await queryClient.cancelQueries(queryKey)
-
-                const prevData =
-                    queryClient.getQueryData<InfiniteData<ExtendedPost[]>>(
-                        queryKey
-                    )
-
-                if (prevData) {
-                    const updatedVotes = (votes: PostVote[]): PostVote[] => {
-                        const existingPostVote = votes.find(
-                            (vote) =>
-                                vote.postId === post.id &&
-                                vote.authorId === session?.user.id
-                        )
-
-                        if (existingPostVote) {
-                            //delete vote if trying to vote again with the same type
-                            if (existingPostVote.type === voteType) {
-                                return votes.filter((vote) =>
-                                    vote.postId === post.id &&
-                                    vote.authorId === session?.user.id
-                                        ? undefined
-                                        : vote
-                                )
-                            }
-
-                            //if vote type is different, update with the new vote type
-                            return votes.map((vote) =>
-                                vote.postId === post.id &&
-                                vote.authorId === session?.user.id
-                                    ? { ...vote, type: voteType }
-                                    : vote
-                            )
-                        }
-
-                        return [
-                            ...votes,
-                            {
-                                postId: post.id,
-                                authorId: session?.user.id ?? "",
-                                type: voteType,
-                            },
-                        ]
-                    }
-
-                    queryClient.setQueryData<InfiniteData<ExtendedPost[]>>(
-                        queryKey,
-                        {
-                            ...prevData,
-                            pages: prevData.pages.map((page) =>
-                                page.map((queryPost) =>
-                                    queryPost.id === post.id
-                                        ? {
-                                              ...queryPost,
-                                              votes: updatedVotes(
-                                                  queryPost.votes
-                                              ),
-                                          }
-                                        : queryPost
-                                )
-                            ),
-                        }
-                    )
-                }
-
-                return {
-                    prevData,
-                }
-            },
-            onError: (_error, _postId, context) => {
-                toast({
-                    title: "There was an error",
-                    description: "Try again in a couple of seconds",
-                    variant: "destructive",
-                })
-                if (context?.prevData) {
-                    queryClient.setQueryData(queryKey, context.prevData)
-                }
-            },
-            onSuccess: () => {
-                queryClient.invalidateQueries(queryKey)
-            },
-        }
-    )
 
     const upVoted = existingVote && existingVote.type === "UP"
     const downVoted = existingVote && existingVote.type === "DOWN"
@@ -164,7 +62,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                             data-state={upVoted ? "on" : "off"}
                             onClick={() => {
                                 if (session) {
-                                    onVote("UP")
+                                    onVote({ voteType: "UP", postId: post.id })
                                 } else {
                                     router.push("/sign-up")
                                 }
@@ -181,7 +79,10 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                             data-state={downVoted ? "on" : "off"}
                             onClick={() => {
                                 if (session) {
-                                    onVote("DOWN")
+                                    onVote({
+                                        voteType: "DOWN",
+                                        postId: post.id,
+                                    })
                                 } else {
                                     router.push("/sign-up")
                                 }
@@ -215,7 +116,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                             </header>
                             <h3 className="text-xl">
                                 <Link
-                                    href={`/c/${communityName}/posts/${post.id}`}
+                                    href={`/c/${communityName}/post/${post.id}`}
                                 >
                                     {post.title}
                                 </Link>
@@ -249,7 +150,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post }, ref) => {
                 </div>
                 <div className="bg-neutral px-4 py-3 text-neutral-foreground">
                     <Link
-                        href={`/c/${communityName}/posts/${post.id}`}
+                        href={`/c/${communityName}/post/${post.id}`}
                         className="flex items-center gap-2"
                     >
                         <MessageSquare />

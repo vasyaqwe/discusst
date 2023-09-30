@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher"
 import { NextResponse } from "next/server"
 import { twMerge } from "tailwind-merge"
 import * as z from "zod"
@@ -17,11 +18,14 @@ export function formatDate(date: Date) {
 }
 
 export function withErrorHandling(
-    handler: (req: Request) => Promise<NextResponse>
+    handler: (
+        req: Request,
+        { params }: { params?: any }
+    ) => Promise<NextResponse>
 ) {
-    return async function (req: Request) {
+    return async function (req: Request, { params }: { params?: any }) {
         try {
-            return await handler(req)
+            return await handler(req, { params })
         } catch (error) {
             if (error instanceof z.ZodError) {
                 return new NextResponse(error.message, { status: 422 })

@@ -33,6 +33,7 @@ export default function RootLayout({
                         <main className="container pb-16 pt-[calc(var(--header-height)+2rem)] md:pt-[calc(var(--header-height)+4rem)]">
                             {authDialog}
                             {children}
+
                             <Toaster />
                         </main>
                     </TanstackProvider>
