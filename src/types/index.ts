@@ -9,7 +9,7 @@ import {
 
 export type ExtendedPost = Post & {
     votes: PostVote[]
-    comments: ExtendedComment[]
+    comments: Comment[]
     community: Community
     author: User
 }

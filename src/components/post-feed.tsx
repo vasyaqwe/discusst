@@ -172,30 +172,34 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
 
     return (
         <>
-            {isLoading
-                ? Array(POSTS_INFINITE_SCROLL_COUNT)
-                      .fill("")
-                      .map((_, idx) => <PostSkeleton key={idx} />)
-                : posts?.map((post, idx) => {
-                      if (idx === posts.length - 1) {
-                          return (
-                              <Post
-                                  onVote={onVote}
-                                  key={post.id}
-                                  ref={ref}
-                                  post={post}
-                              />
-                          )
-                      }
+            {isLoading ? (
+                Array(POSTS_INFINITE_SCROLL_COUNT)
+                    .fill("")
+                    .map((_, idx) => <PostSkeleton key={idx} />)
+            ) : posts.length < 1 ? (
+                <p className="text-primary/60">No posts here yet.</p>
+            ) : (
+                posts.map((post, idx) => {
+                    if (idx === posts.length - 1) {
+                        return (
+                            <Post
+                                onVote={onVote}
+                                key={post.id}
+                                ref={ref}
+                                post={post}
+                            />
+                        )
+                    }
 
-                      return (
-                          <Post
-                              onVote={onVote}
-                              key={post.id}
-                              post={post}
-                          />
-                      )
-                  })}
+                    return (
+                        <Post
+                            onVote={onVote}
+                            key={post.id}
+                            post={post}
+                        />
+                    )
+                })
+            )}
             {isFetchingNextPage && <Spinner className="mx-auto" />}
         </>
     )
