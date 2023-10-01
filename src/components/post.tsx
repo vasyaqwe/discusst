@@ -8,12 +8,14 @@ import { formatRelativeDate } from "@/lib/utils"
 import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Skeleton } from "./ui/skeleton"
 import { UserAvatar } from "./ui/user-avatar"
 import { Toggle } from "./ui/toggle"
 import { useSession } from "next-auth/react"
 import { VoteType } from "@prisma/client"
+import { CreateCommentForm } from "./forms/create-comment-form"
+import { CommentsSection } from "./comments-section"
 
 type PostProps = {
     post: ExtendedPost
@@ -29,6 +31,7 @@ type PostProps = {
 const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
     const { data: session } = useSession()
     const router = useRouter()
+    const pathname = usePathname()
 
     const communityName = post.community.name
 
@@ -46,6 +49,9 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
 
     const upVoted = existingVote && existingVote.type === "UP"
     const downVoted = existingVote && existingVote.type === "DOWN"
+
+    const showComments =
+        pathname.includes("/post") || pathname.includes("/sign-")
 
     return (
         <Card
@@ -148,15 +154,35 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-neutral px-4 py-3 text-neutral-foreground">
-                    <Link
-                        href={`/c/${communityName}/post/${post.id}`}
-                        className="flex items-center gap-2"
-                    >
-                        <MessageSquare />
-                        {post.comments.length} comments
-                    </Link>
-                </div>
+                {!session && showComments ? (
+                    <p className="p-4 text-primary/70">
+                        <Link
+                            className="underline hover:no-underline"
+                            href={"/sign-in"}
+                        >
+                            Sign in
+                        </Link>{" "}
+                        to post comments.
+                    </p>
+                ) : null}
+                {showComments && session && (
+                    <div className="border-t p-4">
+                        <CreateCommentForm postId={post.id} />
+                    </div>
+                )}
+                {showComments && <CommentsSection postId={post.id} />}
+
+                {!showComments && (
+                    <div className="bg-neutral px-4 py-3 text-neutral-foreground">
+                        <Link
+                            href={`/c/${communityName}/post/${post.id}`}
+                            className="flex items-center gap-2"
+                        >
+                            <MessageSquare />
+                            {post.comments.length} comments
+                        </Link>
+                    </div>
+                )}
             </article>
         </Card>
     )
@@ -176,7 +202,7 @@ function PostSkeleton() {
                         <Skeleton className="h-2 w-2 rounded-full" />
                         <Skeleton className="h-7 w-7 " />
                     </div>
-                    <div className="space-y-5 ">
+                    <div className="w-full space-y-5">
                         <div className="flex items-center gap-2">
                             <Skeleton className="h-4 w-20 " /> •{" "}
                             <Skeleton className="h-4 w-32 bg-muted/60" />

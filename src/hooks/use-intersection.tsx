@@ -5,12 +5,12 @@ export function useIntersection({
     root = null,
     isLoading = false,
 }): {
-    ref: RefObject<HTMLElement>
+    ref: RefObject<HTMLDivElement>
     entry: IntersectionObserverEntry | undefined
 } {
     const [entry, setEntry] = useState<IntersectionObserverEntry>()
 
-    const ref = useRef<HTMLElement>(null)
+    const ref = useRef<HTMLDivElement>(null)
 
     function updateEntry([entry]: IntersectionObserverEntry[]) {
         setEntry(entry)

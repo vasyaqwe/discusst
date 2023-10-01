@@ -5,7 +5,7 @@ import { ExtendedPost } from "@/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Post, PostSkeleton } from "./post"
-import { POSTS_INFINITE_SCROLL_COUNT } from "@/config"
+import { POSTS_INFINITE_SCROLL_COUNT, axiosInstance } from "@/config"
 import { Spinner } from "./ui/spinner"
 import {
     InfiniteData,
@@ -13,7 +13,6 @@ import {
     useQueryClient,
 } from "@tanstack/react-query"
 import { PostVotePayload } from "@/lib/validations/post"
-import axios from "axios"
 import { toast } from "@/hooks/use-toast"
 import { PostVote, VoteType } from "@prisma/client"
 import { useSession } from "next-auth/react"
@@ -31,10 +30,10 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
             ["posts"],
             async ({ pageParam = 1 }) => {
                 const query =
-                    `/api/posts?limit=${POSTS_INFINITE_SCROLL_COUNT}&page=${pageParam}` +
+                    `/posts?limit=${POSTS_INFINITE_SCROLL_COUNT}&page=${pageParam}` +
                     (!!communityName ? `&communityName=${communityName}` : "")
 
-                const { data } = await axios.get(query)
+                const { data } = await axiosInstance.get(query)
 
                 return data as ExtendedPost[]
             },
@@ -73,7 +72,7 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
                 voteType,
             }
 
-            await axios.patch("/api/community/post/vote", payload)
+            await axiosInstance.patch("/community/posts/vote", payload)
         },
         {
             onMutate: async ({

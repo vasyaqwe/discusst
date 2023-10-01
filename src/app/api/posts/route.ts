@@ -40,7 +40,7 @@ export const GET = withErrorHandling(async function (req: Request) {
                 name: communityName,
             },
         }
-    } else if (session) {
+    } else if (session && joinedCommunitiesIds.length > 0) {
         whereClause = {
             community: {
                 id: {
@@ -49,6 +49,7 @@ export const GET = withErrorHandling(async function (req: Request) {
             },
         }
     }
+
     const posts = await db.post.findMany({
         take: +limit,
         skip: (+page - 1) * +limit,

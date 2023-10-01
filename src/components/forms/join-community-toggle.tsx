@@ -3,12 +3,12 @@
 import { SubscribeToCommunityPayload } from "@/lib/validations/community"
 import { useMutation } from "@tanstack/react-query"
 import { Button, ButtonProps } from "../ui/button"
-import axios from "axios"
 import { Spinner } from "../ui/spinner"
 import { toast } from "@/hooks/use-toast"
 import { startTransition } from "react"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Session } from "next-auth"
+import { axiosInstance } from "@/config"
 
 type JoinCommunityToggleProps = {
     session: Session | null
@@ -32,8 +32,8 @@ export function JoinCommunityToggle({
                 communityId,
             }
 
-            const { data } = await axios.post(
-                "/api/community/toggle-subscribe",
+            const { data } = await axiosInstance.post(
+                "/community/toggle-subscribe",
                 payload
             )
 

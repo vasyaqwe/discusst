@@ -1,12 +1,12 @@
 "use client"
 
 import { Post, PostSkeleton } from "@/components/post"
+import { axiosInstance } from "@/config"
 import { toast } from "@/hooks/use-toast"
 import { PostVotePayload } from "@/lib/validations/post"
 import { ExtendedPost } from "@/types"
 import { PostVote, VoteType } from "@prisma/client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { useSession } from "next-auth/react"
 import { notFound } from "next/navigation"
 
@@ -22,7 +22,7 @@ export default function Page({ params: { postId } }: PageProps) {
     const queryKey = ["posts", postId]
 
     const { data: post, isLoading } = useQuery(queryKey, async () => {
-        const { data } = await axios.get(`/api/community/post/${postId}`)
+        const { data } = await axiosInstance.get(`/community/posts/${postId}`)
 
         return data as ExtendedPost
     })
@@ -44,7 +44,7 @@ export default function Page({ params: { postId } }: PageProps) {
                 voteType,
             }
 
-            await axios.patch("/api/community/post/vote", payload)
+            await axiosInstance.patch("/community/posts/vote", payload)
         },
         {
             onMutate: async ({

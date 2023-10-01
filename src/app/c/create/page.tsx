@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ErrorMessage, Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
+import { axiosInstance } from "@/config"
 import { useFormValidation } from "@/hooks/use-form-validation"
 import { toast } from "@/hooks/use-toast"
 import {
@@ -11,7 +12,7 @@ import {
     communitySchema,
 } from "@/lib/validations/community"
 import { useMutation } from "@tanstack/react-query"
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -27,7 +28,7 @@ export default function Page() {
                 name: formData.name,
             }
 
-            const { data } = await axios.post("/api/community", payload)
+            const { data } = await axiosInstance.post("/community", payload)
 
             return data as string
         },

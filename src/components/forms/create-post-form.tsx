@@ -7,13 +7,14 @@ import { uploadFiles } from "@/lib/uploadthing"
 import { CreatePostPayload, postSchema } from "@/lib/validations/post"
 import { useFormValidation } from "@/hooks/use-form-validation"
 import { useMutation } from "@tanstack/react-query"
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 import { toast } from "@/hooks/use-toast"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "../ui/button"
 import { Card } from "../ui/card"
 import { Spinner } from "../ui/spinner"
 import { ErrorMessage } from "../ui/input"
+import { axiosInstance } from "@/config"
 
 type CreatePostFormProps = { communityId: string }
 
@@ -118,8 +119,8 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
 
     const { mutate: onCreatePost, isLoading } = useMutation(
         async (payload: CreatePostPayload) => {
-            const { data } = await axios.post(
-                "/api/community/post/create",
+            const { data } = await axiosInstance.post(
+                "/community/posts",
                 payload
             )
 
