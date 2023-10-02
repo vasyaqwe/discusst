@@ -2,11 +2,11 @@
 
 import { Session } from "next-auth"
 import { usePathname, useRouter } from "next/navigation"
-import { UserAvatar } from "./ui/user-avatar"
-import { Input } from "./ui/input"
-import { Card, CardProps } from "./ui/card"
+import { UserAvatar } from "@/components/ui/user-avatar"
+import { Input } from "@/components/ui/input"
+import { Card, CardProps } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 import { ImageIcon, Link2 } from "lucide-react"
 import Link from "next/link"
 

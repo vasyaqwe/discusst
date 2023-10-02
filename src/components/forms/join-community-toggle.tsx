@@ -2,8 +2,8 @@
 
 import { SubscribeToCommunityPayload } from "@/lib/validations/community"
 import { useMutation } from "@tanstack/react-query"
-import { Button, ButtonProps } from "../ui/button"
-import { Spinner } from "../ui/spinner"
+import { Button, ButtonProps } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/hooks/use-toast"
 import { startTransition } from "react"
 import { useRouter } from "next/navigation"

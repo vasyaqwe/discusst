@@ -1,7 +1,7 @@
 "use client"
 
 import { X } from "lucide-react"
-import { Button } from "./button"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 
 export function CloseDialogButton({}) {

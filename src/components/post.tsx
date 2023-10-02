@@ -2,20 +2,20 @@
 
 import { ExtendedPost } from "@/types"
 import { forwardRef, useRef } from "react"
-import { Card } from "./ui/card"
+import { Card } from "@/components/ui/card"
 import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
 import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Skeleton } from "./ui/skeleton"
-import { UserAvatar } from "./ui/user-avatar"
-import { Toggle } from "./ui/toggle"
+import { Skeleton } from "@/components/ui/skeleton"
+import { UserAvatar } from "@/components/ui/user-avatar"
+import { Toggle } from "@/components/ui/toggle"
 import { useSession } from "next-auth/react"
 import { VoteType } from "@prisma/client"
-import { CreateCommentForm } from "./forms/create-comment-form"
-import { CommentsSection } from "./comments-section"
+import { CreateCommentForm } from "@/components/forms/create-comment-form"
+import { CommentsSection } from "@/components/comments-section"
 
 type PostProps = {
     post: ExtendedPost

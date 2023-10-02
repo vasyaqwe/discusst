@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
-import { Button } from "./button"
+import { Button } from "@/components/ui/button"
 
 type CommunityHeaderProps = {
     name: string

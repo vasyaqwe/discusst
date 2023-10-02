@@ -3,8 +3,8 @@
 import Link from "next/link"
 import logo from "@public/logo.svg"
 import Image from "next/image"
-import { Button } from "../ui/button"
-import { AccountMenu } from "../ui/account-menu"
+import { Button } from "@/components/ui/button"
+import { AccountMenu } from "@/components/ui/account-menu"
 import { useSession } from "next-auth/react"
 
 export function Header() {

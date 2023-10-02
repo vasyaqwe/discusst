@@ -4,9 +4,9 @@ import { useIntersection } from "@/hooks/use-intersection"
 import { ExtendedPost } from "@/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { Post, PostSkeleton } from "./post"
+import { Post, PostSkeleton } from "@/components/post"
 import { POSTS_INFINITE_SCROLL_COUNT, axiosInstance } from "@/config"
-import { Spinner } from "./ui/spinner"
+import { Spinner } from "@/components/ui/spinner"
 import {
     InfiniteData,
     useMutation,

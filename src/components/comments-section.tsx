@@ -6,9 +6,9 @@ import { useIntersection } from "@/hooks/use-intersection"
 import { formatRelativeDate } from "@/lib/utils"
 import { ExtendedComment } from "@/types"
 import { forwardRef, useEffect } from "react"
-import { PostSkeleton } from "./post"
-import { Spinner } from "./ui/spinner"
-import { UserAvatar } from "./ui/user-avatar"
+import { PostSkeleton } from "@/components/post"
+import { Spinner } from "@/components/ui/spinner"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 export function CommentsSection({ postId }: { postId: string }) {
     const { isLoading, data, hasNextPage, isFetchingNextPage, fetchNextPage } =
