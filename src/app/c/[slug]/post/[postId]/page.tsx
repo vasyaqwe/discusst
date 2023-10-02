@@ -32,19 +32,15 @@ export default function Page({ params: { postId } }: PageProps) {
     const queryClient = useQueryClient()
 
     const { mutate: onVote } = useMutation(
-        async ({
-            voteType,
-            postId,
-        }: {
-            voteType: VoteType
-            postId: string
-        }) => {
+        async ({ voteType }: { voteType: VoteType }) => {
             const payload: PostVotePayload = {
-                postId: postId,
                 voteType,
             }
 
-            await axiosInstance.patch("/community/posts/vote", payload)
+            await axiosInstance.patch(
+                `/community/posts/${postId}/vote`,
+                payload
+            )
         },
         {
             onMutate: async ({

@@ -12,14 +12,15 @@ export function CommunityHeader({ name }: CommunityHeaderProps) {
     const pathname = usePathname()
     const router = useRouter()
 
-    const afterSlash = pathname.includes("submit") ? `/ New post` : ""
+    const onSubmitPage = pathname.includes("submit") ? `/ New post` : ""
+    const showBackLink =
+        pathname.includes("/post/") || pathname.includes("submit")
 
     return (
         <>
-            {afterSlash && (
+            {showBackLink && (
                 <Button
                     role="link"
-                    className="mb-3"
                     variant={"link"}
                     onClick={() => router.back()}
                 >
@@ -31,7 +32,7 @@ export function CommunityHeader({ name }: CommunityHeaderProps) {
                 c/{name}
                 <span className="text-lg font-semibold opacity-50">
                     {" "}
-                    {afterSlash}
+                    {onSubmitPage}
                 </span>
             </h1>
         </>

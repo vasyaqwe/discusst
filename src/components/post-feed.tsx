@@ -25,9 +25,11 @@ type PostFeedProps = {
 export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
     const { data: session } = useSession()
 
+    const queryKey = ["posts"]
+
     const { isLoading, data, hasNextPage, isFetchingNextPage, fetchNextPage } =
         useInfiniteQuery(
-            ["posts"],
+            queryKey,
             async ({ pageParam = 1 }) => {
                 const query =
                     `/posts?limit=${POSTS_INFINITE_SCROLL_COUNT}&page=${pageParam}` +
@@ -57,8 +59,6 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
 
     const queryClient = useQueryClient()
 
-    const queryKey = ["posts"]
-
     const { mutate: onVote } = useMutation(
         async ({
             voteType,
@@ -68,11 +68,13 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
             postId: string
         }) => {
             const payload: PostVotePayload = {
-                postId: postId,
                 voteType,
             }
 
-            await axiosInstance.patch("/community/posts/vote", payload)
+            await axiosInstance.patch(
+                `/community/posts/${postId}/vote`,
+                payload
+            )
         },
         {
             onMutate: async ({

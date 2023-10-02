@@ -1,10 +1,13 @@
 import { getAuthSession } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { withErrorHandling } from "@/lib/utils"
-import { postVoteSchema } from "@/lib/validations/post"
+import { commentVoteSchema } from "@/lib/validations/comment"
 import { NextResponse } from "next/server"
 
-export const PATCH = withErrorHandling(async function (req: Request) {
+export const PATCH = withErrorHandling(async function (
+    req: Request,
+    { params: { commentId } }
+) {
     const session = await getAuthSession()
 
     if (!session) {
@@ -13,39 +16,39 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         })
     }
 
-    const body = await req.json()
-
-    const { postId, voteType } = postVoteSchema.parse(body)
-
-    const post = await db.post.findFirst({
+    const comment = await db.comment.findFirst({
         where: {
-            id: postId,
+            id: commentId,
         },
         select: {
             id: true,
         },
     })
 
-    if (!post) return new NextResponse("Post not found", { status: 404 })
+    if (!comment) return new NextResponse("Comment not found", { status: 404 })
 
-    const existingPostVote = await db.postVote.findFirst({
+    const body = await req.json()
+
+    const { voteType } = commentVoteSchema.parse(body)
+
+    const existingCommentVote = await db.commentVote.findFirst({
         where: {
             authorId: session.user.id,
-            postId,
+            commentId,
         },
         select: {
             type: true,
         },
     })
 
-    if (existingPostVote) {
+    if (existingCommentVote) {
         //delete vote if trying to vote again with the same type
-        if (existingPostVote.type === voteType) {
-            await db.postVote.delete({
+        if (existingCommentVote.type === voteType) {
+            await db.commentVote.delete({
                 where: {
-                    authorId_postId: {
+                    authorId_commentId: {
                         authorId: session.user.id,
-                        postId,
+                        commentId,
                     },
                 },
             })
@@ -54,14 +57,14 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         }
 
         //if vote type is different, update with the new vote type
-        await db.postVote.update({
+        await db.commentVote.update({
             data: {
                 type: voteType,
             },
             where: {
-                authorId_postId: {
+                authorId_commentId: {
                     authorId: session.user.id,
-                    postId,
+                    commentId,
                 },
             },
         })
@@ -69,10 +72,10 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         return new NextResponse("OK")
     }
 
-    await db.postVote.create({
+    await db.commentVote.create({
         data: {
             authorId: session.user.id,
-            postId,
+            commentId,
             type: voteType,
         },
     })

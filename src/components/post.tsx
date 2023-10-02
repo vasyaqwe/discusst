@@ -35,6 +35,8 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
 
     const communityName = post.community.name
 
+    const contentRef = useRef<HTMLDivElement>(null)
+
     const votesAmount = post.votes.reduce((acc, currVote) => {
         if (currVote.type === "UP") return acc + 1
         if (currVote.type === "DOWN") return acc - 1
@@ -44,8 +46,6 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
     const existingVote = post.votes.find(
         (vote) => vote.authorId === session?.user.id
     )
-
-    const contentRef = useRef<HTMLDivElement>(null)
 
     const upVoted = existingVote && existingVote.type === "UP"
     const downVoted = existingVote && existingVote.type === "DOWN"
