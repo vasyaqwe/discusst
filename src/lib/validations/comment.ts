@@ -11,8 +11,8 @@ export const commentVoteSchema = z.object({
 })
 
 export const commentsQuerySchema = z.object({
-    limit: z.string(),
-    page: z.string(),
+    limit: z.string().nullish().optional(),
+    page: z.string().nullish().optional(),
     postId: z.string(),
 })
 

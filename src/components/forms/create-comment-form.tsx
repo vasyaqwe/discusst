@@ -4,7 +4,6 @@ import TextareaAutosize from "react-textarea-autosize"
 import { useState } from "react"
 import { useFormValidation } from "@/hooks/use-form-validation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { AxiosError } from "axios"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -33,15 +32,7 @@ export function CreateCommentForm({ postId }: CreateCommentFormProps) {
             return data
         },
         {
-            onError: (error) => {
-                if (error instanceof AxiosError) {
-                    return toast({
-                        title: error.response?.data.title,
-                        description: error.response?.data.description,
-                        variant: "destructive",
-                    })
-                }
-
+            onError: () => {
                 toast({
                     title: "Something went wrong.",
                     description: "Could not create comment.",
@@ -77,18 +68,24 @@ export function CreateCommentForm({ postId }: CreateCommentFormProps) {
 
     return (
         <>
-            <h3 className="mb-3 text-xl">Post a comment</h3>
             <form
                 onSubmit={(e) => {
                     e.preventDefault()
                     safeOnSubmit()
                 }}
             >
+                <label
+                    htmlFor="comment"
+                    className="mb-2 inline-block text-xl font-semibold"
+                >
+                    Post a comment
+                </label>
                 <Textarea
                     invalid={errors.body}
                     asChild
                 >
                     <TextareaAutosize
+                        id="comment"
                         value={formData.body}
                         onChange={(e) =>
                             setFormData((prev) => ({

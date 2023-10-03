@@ -4,29 +4,58 @@ import {
     InfiniteData,
     useInfiniteQuery,
     useMutation,
+    useQuery,
     useQueryClient,
 } from "@tanstack/react-query"
 import { COMMENTS_INFINITE_SCROLL_COUNT, axiosInstance } from "@/config"
 import { useIntersection } from "@/hooks/use-intersection"
 import { formatRelativeDate } from "@/lib/utils"
 import { ExtendedComment } from "@/types"
-import { forwardRef, useEffect } from "react"
-import { PostSkeleton } from "@/components/post"
+import { forwardRef, useEffect, useMemo, useState } from "react"
+import TextareaAutosize from "react-textarea-autosize"
 import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { CommentVote, VoteType } from "@prisma/client"
-import { CommentVotePayload } from "@/lib/validations/comment"
+import {
+    CommentVotePayload,
+    CreateCommentPayload,
+    commentSchema,
+} from "@/lib/validations/comment"
 import { toast } from "@/hooks/use-toast"
 import { useSession } from "next-auth/react"
 import { Toggle } from "@/components/ui/toggle"
 import { useRouter } from "next/navigation"
-import { ArrowBigDown, ArrowBigUp } from "lucide-react"
+import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { Textarea } from "@/components/ui/textarea"
+import { ErrorMessage } from "@/components/ui/input"
+
+type OnVoteArgs = {
+    voteType: VoteType
+    commentId: string
+}
 
 export function CommentsSection({ postId }: { postId: string }) {
     const { data: session } = useSession()
 
+    const allCommentsQueryKey = ["posts", postId, "all-comments"]
     const queryKey = ["posts", postId, "comments"]
+
+    const { data: allComments } = useQuery(
+        allCommentsQueryKey,
+        async () => {
+            const { data } = await axiosInstance.get(
+                `/community/posts/${postId}/comments`
+            )
+
+            return data as ExtendedComment[]
+        },
+        {
+            refetchInterval: 50000,
+        }
+    )
 
     const { isLoading, data, hasNextPage, isFetchingNextPage, fetchNextPage } =
         useInfiniteQuery(
@@ -49,13 +78,7 @@ export function CommentsSection({ postId }: { postId: string }) {
     const queryClient = useQueryClient()
 
     const { mutate: onVote } = useMutation(
-        async ({
-            voteType,
-            commentId,
-        }: {
-            voteType: VoteType
-            commentId: string
-        }) => {
+        async ({ voteType, commentId }: OnVoteArgs) => {
             const payload: CommentVotePayload = {
                 voteType,
             }
@@ -66,61 +89,72 @@ export function CommentsSection({ postId }: { postId: string }) {
             )
         },
         {
-            onMutate: async ({
-                voteType,
-                commentId,
-            }: {
-                voteType: VoteType
-                commentId: string
-            }) => {
+            onMutate: async ({ voteType, commentId }: OnVoteArgs) => {
                 // Stop the queries that may affect this operation
                 await queryClient.cancelQueries(queryKey)
+                await queryClient.cancelQueries(allCommentsQueryKey)
 
                 const prevData =
                     queryClient.getQueryData<InfiniteData<ExtendedComment[]>>(
                         queryKey
                     )
+                const prevAllData =
+                    queryClient.getQueryData<ExtendedComment[]>(
+                        allCommentsQueryKey
+                    )
 
-                if (prevData) {
-                    const updatedVotes = (
-                        votes: CommentVote[]
-                    ): CommentVote[] => {
-                        const existingCommentVote = votes.find(
-                            (vote) =>
+                const updatedVotes = (votes: CommentVote[]): CommentVote[] => {
+                    const existingCommentVote = votes.find(
+                        (vote) =>
+                            vote.commentId === commentId &&
+                            vote.authorId === session?.user.id
+                    )
+
+                    if (existingCommentVote) {
+                        //delete vote if trying to vote again with the same type
+                        if (existingCommentVote.type === voteType) {
+                            return votes.filter((vote) =>
                                 vote.commentId === commentId &&
                                 vote.authorId === session?.user.id
-                        )
-
-                        if (existingCommentVote) {
-                            //delete vote if trying to vote again with the same type
-                            if (existingCommentVote.type === voteType) {
-                                return votes.filter((vote) =>
-                                    vote.commentId === commentId &&
-                                    vote.authorId === session?.user.id
-                                        ? undefined
-                                        : vote
-                                )
-                            }
-
-                            //if vote type is different, update with the new vote type
-                            return votes.map((vote) =>
-                                vote.commentId === commentId &&
-                                vote.authorId === session?.user.id
-                                    ? { ...vote, type: voteType }
+                                    ? undefined
                                     : vote
                             )
                         }
 
-                        return [
-                            ...votes,
-                            {
-                                commentId: commentId,
-                                authorId: session?.user.id ?? "",
-                                type: voteType,
-                            },
-                        ]
+                        //if vote type is different, update with the new vote type
+                        return votes.map((vote) =>
+                            vote.commentId === commentId &&
+                            vote.authorId === session?.user.id
+                                ? { ...vote, type: voteType }
+                                : vote
+                        )
                     }
 
+                    return [
+                        ...votes,
+                        {
+                            commentId: commentId,
+                            authorId: session?.user.id ?? "",
+                            type: voteType,
+                        },
+                    ]
+                }
+
+                if (prevAllData) {
+                    queryClient.setQueryData<ExtendedComment[]>(
+                        allCommentsQueryKey,
+                        prevAllData.map((queryComment) =>
+                            queryComment.id === commentId
+                                ? {
+                                      ...queryComment,
+                                      votes: updatedVotes(queryComment.votes),
+                                  }
+                                : queryComment
+                        )
+                    )
+                }
+
+                if (prevData) {
                     queryClient.setQueryData<InfiniteData<ExtendedComment[]>>(
                         queryKey,
                         {
@@ -143,6 +177,7 @@ export function CommentsSection({ postId }: { postId: string }) {
 
                 return {
                     prevData,
+                    prevAllData,
                 }
             },
             onError: (_error, _postId, context) => {
@@ -172,36 +207,281 @@ export function CommentsSection({ postId }: { postId: string }) {
 
     const comments = data?.pages.flatMap((page) => page) ?? []
 
+    const replies = useMemo(() => {
+        const group: Record<string, ExtendedComment[]> = {}
+        allComments?.forEach((comment) => {
+            if (comment.replyToId !== null) {
+                group[comment.replyToId] ||= []
+                group[comment.replyToId].push(comment)
+            }
+        })
+        return group
+    }, [allComments])
+
     return (
         <>
             {isLoading
                 ? Array(COMMENTS_INFINITE_SCROLL_COUNT)
                       .fill("")
                       .map((_, idx) => <CommentSkeleton key={idx} />)
-                : comments.map((c, idx) => {
-                      if (idx === comments.length - 1) {
+                : comments
+                      .filter((comment) => comment.replyToId === null)
+                      .map((c, idx) => {
                           return (
                               <Comment
-                                  onVote={onVote}
                                   key={c.id}
-                                  ref={ref}
+                                  onVote={onVote}
+                                  ref={
+                                      idx === comments.length - 1
+                                          ? ref
+                                          : undefined
+                                  }
+                                  replies={replies}
                                   comment={c}
+                                  postId={postId}
                               />
                           )
-                      }
-
-                      return (
-                          <Comment
-                              onVote={onVote}
-                              key={c.id}
-                              comment={c}
-                          />
-                      )
-                  })}
+                      })}
             {isFetchingNextPage && <Spinner className="mx-auto" />}
         </>
     )
 }
+
+type CommentProps = {
+    comment: ExtendedComment
+    postId: string
+    onVote: (args: OnVoteArgs) => void
+    replies: Record<string, ExtendedComment[]>
+} & React.ComponentPropsWithRef<"div">
+
+const Comment = forwardRef<HTMLDivElement, CommentProps>(
+    ({ comment, onVote, postId, replies }, ref) => {
+        const [formData, setFormData] = useState<CreateCommentPayload>({
+            body: "",
+            postId,
+        })
+        const [isReplying, setIsReplying] = useState(false)
+
+        const { data: session } = useSession()
+        const router = useRouter()
+
+        const queryClient = useQueryClient()
+
+        const { mutate: onReply, isLoading } = useMutation(
+            async (payload: CreateCommentPayload) => {
+                const { data } = await axiosInstance.post(
+                    `/community/posts/${postId}/comments`,
+                    payload
+                )
+
+                return data
+            },
+            {
+                onError: () => {
+                    toast({
+                        title: "Something went wrong.",
+                        description: "Could not reply to comment.",
+                        variant: "destructive",
+                    })
+                },
+                onSuccess: () => {
+                    queryClient.invalidateQueries(["posts", postId, "comments"])
+                    queryClient.invalidateQueries([
+                        "posts",
+                        postId,
+                        "all-comments",
+                    ])
+
+                    setFormData((prev) => ({ ...prev, body: "" }))
+                    setIsReplying(false)
+
+                    toast({
+                        title: "Reply created.",
+                    })
+                },
+            }
+        )
+
+        async function onSubmit() {
+            const payload: CreateCommentPayload = {
+                ...formData,
+                body: formData.body,
+                replyToId: comment.id,
+            }
+            onReply(payload)
+        }
+
+        const { safeOnSubmit, errors } = useFormValidation({
+            onSubmit,
+            formData,
+            zodSchema: commentSchema,
+        })
+
+        const votesAmount = comment.votes.reduce((acc, currVote) => {
+            if (currVote.type === "UP") return acc + 1
+            if (currVote.type === "DOWN") return acc - 1
+            return acc
+        }, 0)
+
+        const existingVote = comment.votes.find(
+            (vote) => vote.authorId === session?.user.id
+        )
+
+        const upVoted = existingVote && existingVote.type === "UP"
+        const downVoted = existingVote && existingVote.type === "DOWN"
+
+        return (
+            <div
+                data-noline={
+                    isReplying ? false : !replies[comment.id] ? true : false
+                }
+                data-toplevel={comment.replyToId === null}
+                className={`relative flex min-w-[260px] py-3 pl-3 pr-1 before:absolute before:left-[1.45rem] 
+                before:top-11 
+                before:h-[calc(100%-44px)] before:w-[2px] before:bg-border
+           data-[toplevel=false]:overflow-hidden data-[toplevel=true]:overflow-x-auto data-[toplevel=true]:border-t data-[noline=false]:pb-0
+           data-[toplevel=false]:pl-6
+                     data-[toplevel=false]:before:left-[2.2rem] data-[noline=true]:before:hidden`}
+                ref={ref}
+            >
+                <div className="inline-block h-full w-full">
+                    <header className="mb-2 font-medium">
+                        <UserAvatar
+                            user={comment.author}
+                            className="mr-2 inline-block h-6 w-6 align-middle"
+                        />
+                        u/{comment.author.name}{" "}
+                        <span className="text-sm font-normal text-primary/50">
+                            {formatRelativeDate(comment.createdAt)}
+                        </span>
+                    </header>
+                    <p className="ml-8">{comment.body}</p>
+                    <div className="ml-8 mt-2 flex items-center gap-1">
+                        <Toggle
+                            data-state={upVoted ? "on" : "off"}
+                            onClick={() => {
+                                if (session) {
+                                    onVote({
+                                        voteType: "UP",
+                                        commentId: comment.id,
+                                    })
+                                } else {
+                                    router.push("/sign-up")
+                                }
+                            }}
+                            size={"xs"}
+                            className="flex-shrink-0"
+                        >
+                            <ArrowBigUp
+                                width={20}
+                                height={20}
+                                className={upVoted ? "stroke-accent" : ""}
+                            />
+                        </Toggle>
+                        {votesAmount}
+                        <Toggle
+                            data-state={downVoted ? "on" : "off"}
+                            onClick={() => {
+                                if (session) {
+                                    onVote({
+                                        voteType: "DOWN",
+                                        commentId: comment.id,
+                                    })
+                                } else {
+                                    router.push("/sign-up")
+                                }
+                            }}
+                            size={"xs"}
+                            className="flex-shrink-0"
+                        >
+                            <ArrowBigDown
+                                width={20}
+                                height={20}
+                                className={downVoted ? "stroke-secondary" : ""}
+                            />
+                        </Toggle>
+                        <Button
+                            onClick={() => {
+                                if (session) {
+                                    setIsReplying(!isReplying)
+                                } else {
+                                    router.push("/sign-up")
+                                }
+                            }}
+                            size={"xs"}
+                            variant={"ghost"}
+                            className="text-sm"
+                        >
+                            <MessageSquare size={18} />
+                            Reply
+                        </Button>
+                    </div>
+                    {isReplying && (
+                        <div className="ml-8 ">
+                            <form
+                                className="w-full pb-4 pr-4"
+                                onSubmit={(e) => {
+                                    e.preventDefault()
+                                    safeOnSubmit()
+                                }}
+                            >
+                                <label
+                                    htmlFor="reply"
+                                    className="my-2 inline-block text-lg font-medium"
+                                >
+                                    Reply
+                                </label>
+                                <Textarea
+                                    invalid={errors.body}
+                                    asChild
+                                >
+                                    <TextareaAutosize
+                                        id="reply"
+                                        value={formData.body}
+                                        onChange={(e) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                body: e.target.value,
+                                            }))
+                                        }
+                                        autoFocus
+                                        placeholder="Type your reply here..."
+                                        className="w-full resize-none "
+                                    />
+                                </Textarea>
+                                {errors.body && (
+                                    <ErrorMessage error={errors.body} />
+                                )}
+                                <div className="mt-3 flex flex-wrap items-center justify-between gap-1">
+                                    <Button disabled={isLoading}>
+                                        {isLoading && <Spinner />}
+                                        Post
+                                    </Button>
+                                    <Button
+                                        onClick={() => setIsReplying(false)}
+                                        variant={"outline"}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                    {replies[comment.id]?.map((reply) => (
+                        <Comment
+                            key={reply.id}
+                            replies={replies}
+                            onVote={onVote}
+                            comment={reply}
+                            postId={postId}
+                        />
+                    ))}
+                </div>
+            </div>
+        )
+    }
+)
+Comment.displayName = "Comment"
 
 function CommentSkeleton() {
     return (
@@ -224,99 +504,3 @@ function CommentSkeleton() {
         </div>
     )
 }
-
-type CommentProps = {
-    comment: ExtendedComment
-    onVote: ({
-        voteType,
-        commentId,
-    }: {
-        voteType: VoteType
-        commentId: string
-    }) => void
-} & React.ComponentPropsWithRef<"div">
-
-const Comment = forwardRef<HTMLDivElement, CommentProps>(
-    ({ comment, onVote }, ref) => {
-        const { data: session } = useSession()
-        const router = useRouter()
-
-        const votesAmount = comment.votes.reduce((acc, currVote) => {
-            if (currVote.type === "UP") return acc + 1
-            if (currVote.type === "DOWN") return acc - 1
-            return acc
-        }, 0)
-
-        const existingVote = comment.votes.find(
-            (vote) => vote.authorId === session?.user.id
-        )
-
-        const upVoted = existingVote && existingVote.type === "UP"
-        const downVoted = existingVote && existingVote.type === "DOWN"
-
-        return (
-            <div
-                ref={ref}
-                className="border-t px-4 py-3"
-            >
-                <header className="mb-2 font-medium">
-                    <UserAvatar
-                        user={comment.author}
-                        className="mr-2 inline-block h-6 w-6 align-middle"
-                    />
-                    u/{comment.author.name}{" "}
-                    <span className="text-sm font-normal text-primary/50">
-                        {formatRelativeDate(comment.createdAt)}
-                    </span>
-                </header>
-                <p>{comment.body}</p>
-                <div className="mt-2 flex items-center gap-1">
-                    <Toggle
-                        data-state={upVoted ? "on" : "off"}
-                        onClick={() => {
-                            if (session) {
-                                onVote({
-                                    voteType: "UP",
-                                    commentId: comment.id,
-                                })
-                            } else {
-                                router.push("/sign-up")
-                            }
-                        }}
-                        size={"xs"}
-                        className="flex-shrink-0"
-                    >
-                        <ArrowBigUp
-                            width={20}
-                            height={20}
-                            className={upVoted ? "stroke-accent" : ""}
-                        />
-                    </Toggle>
-                    {votesAmount}
-                    <Toggle
-                        data-state={downVoted ? "on" : "off"}
-                        onClick={() => {
-                            if (session) {
-                                onVote({
-                                    voteType: "DOWN",
-                                    commentId: comment.id,
-                                })
-                            } else {
-                                router.push("/sign-up")
-                            }
-                        }}
-                        size={"xs"}
-                        className="flex-shrink-0"
-                    >
-                        <ArrowBigDown
-                            width={20}
-                            height={20}
-                            className={downVoted ? "stroke-secondary" : ""}
-                        />
-                    </Toggle>
-                </div>
-            </div>
-        )
-    }
-)
-Comment.displayName = "Comment"

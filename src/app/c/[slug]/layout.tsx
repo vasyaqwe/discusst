@@ -61,7 +61,7 @@ export default async function Layout({
     return (
         <>
             <CommunityHeader name={community?.name} />
-            <div className="mt-3 grid gap-4 md:mt-6 md:grid-cols-3 lg:gap-6">
+            <div className="mt-3 gap-4 md:mt-6 md:grid md:grid-cols-3 lg:gap-6">
                 <div className="flex flex-col gap-5 md:col-span-2">
                     {children}
                 </div>
@@ -71,7 +71,7 @@ export default async function Layout({
                 >
                     <aside className="hidden md:block">
                         <div className="bg-neutral p-5 lg:p-6">
-                            <h2 className="text-neutral-foreground text-xl">
+                            <h2 className="text-xl text-neutral-foreground">
                                 About c/{community.name}
                             </h2>
                         </div>

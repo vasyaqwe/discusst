@@ -43,18 +43,22 @@ export const GET = withErrorHandling(async function (
     })
 
     const comments = await db.comment.findMany({
-        take: +limit,
-        skip: (+page - 1) * +limit,
-        orderBy: {
-            createdAt: "desc",
-        },
+        take: limit ? +limit : undefined,
+        skip: page && limit ? (+page - 1) * +limit : undefined,
+        orderBy: [
+            {
+                replyToId: "asc",
+            },
+            {
+                createdAt: "desc",
+            },
+        ],
         include: {
             votes: true,
             author: true,
         },
         where: {
             postId,
-            replyToId: null,
         },
     })
 

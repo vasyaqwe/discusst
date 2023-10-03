@@ -17,4 +17,5 @@ export type ExtendedPost = Post & {
 export type ExtendedComment = Comment & {
     votes: CommentVote[]
     author: User
+    replies: ExtendedComment[]
 }
