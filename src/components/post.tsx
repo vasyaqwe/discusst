@@ -77,7 +77,9 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                             className="flex-shrink-0"
                         >
                             <ArrowBigUp
-                                className={upVoted ? "stroke-accent" : ""}
+                                className={
+                                    upVoted ? "fill-accent stroke-accent" : ""
+                                }
                             />
                         </Toggle>
                         {votesAmount}
@@ -97,7 +99,11 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                             className="flex-shrink-0"
                         >
                             <ArrowBigDown
-                                className={downVoted ? "stroke-secondary" : ""}
+                                className={
+                                    downVoted
+                                        ? "fill-secondary stroke-secondary"
+                                        : ""
+                                }
                             />
                         </Toggle>
                     </div>

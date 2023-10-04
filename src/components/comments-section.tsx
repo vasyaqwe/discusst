@@ -219,7 +219,7 @@ export function CommentsSection({ postId }: { postId: string }) {
     }, [allComments])
 
     return (
-        <>
+        <div className="flex flex-col">
             {isLoading
                 ? Array(COMMENTS_INFINITE_SCROLL_COUNT)
                       .fill("")
@@ -242,8 +242,8 @@ export function CommentsSection({ postId }: { postId: string }) {
                               />
                           )
                       })}
-            {isFetchingNextPage && <Spinner className="mx-auto" />}
-        </>
+            {isFetchingNextPage && <Spinner className="mx-auto mb-3" />}
+        </div>
     )
 }
 
@@ -375,7 +375,9 @@ const Comment = forwardRef<HTMLDivElement, CommentProps>(
                             <ArrowBigUp
                                 width={20}
                                 height={20}
-                                className={upVoted ? "stroke-accent" : ""}
+                                className={
+                                    upVoted ? "fill-accent stroke-accent" : ""
+                                }
                             />
                         </Toggle>
                         {votesAmount}
@@ -397,7 +399,11 @@ const Comment = forwardRef<HTMLDivElement, CommentProps>(
                             <ArrowBigDown
                                 width={20}
                                 height={20}
-                                className={downVoted ? "stroke-secondary" : ""}
+                                className={
+                                    downVoted
+                                        ? "fill-secondary stroke-secondary"
+                                        : ""
+                                }
                             />
                         </Toggle>
                         <Button
