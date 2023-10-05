@@ -28,7 +28,10 @@ export function Header() {
                 {session?.user ? (
                     <AccountMenu user={session.user} />
                 ) : (
-                    <Button asChild>
+                    <Button
+                        className="flex-shrink-0"
+                        asChild
+                    >
                         <Link href={"/sign-in"}>Sign in</Link>
                     </Button>
                 )}

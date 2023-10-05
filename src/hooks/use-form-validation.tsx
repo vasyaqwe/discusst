@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { ZodIssueBase } from "zod"
 import * as z from "zod"
 
-export type ValidationErrors = Record<string, string>
+type Errors<T> = Record<keyof T, string>
 
 export const useFormValidation = <TFormData,>({
     onSubmit,
@@ -13,7 +13,7 @@ export const useFormValidation = <TFormData,>({
     formData: TFormData
     zodSchema: z.Schema<TFormData>
 }) => {
-    const [errors, setErrors] = useState<ValidationErrors>({})
+    const [errors, setErrors] = useState<Errors<TFormData> | {}>({})
     const [showErrors, setShowErrors] = useState(false)
 
     const validate = () => {
@@ -52,7 +52,9 @@ export const useFormValidation = <TFormData,>({
     }
 
     return {
-        errors: showErrors ? errors : {},
+        errors: showErrors
+            ? (errors as Errors<TFormData>)
+            : ({} as Errors<TFormData>),
         safeOnSubmit,
     }
 }

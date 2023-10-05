@@ -20,6 +20,7 @@ export default function Page() {
     const [formData, setFormData] = useState<CreateCommunityPayload>({
         name: "",
     })
+
     const router = useRouter()
 
     const { mutate: onSubmit, isLoading } = useMutation(
@@ -68,7 +69,7 @@ export default function Page() {
             <h1 className="text-3xl font-bold">New Community</h1>
             <Card
                 asChild
-                className="mt-5 md:mt-10 "
+                className="mt-6"
             >
                 <form
                     onSubmit={(e) => {

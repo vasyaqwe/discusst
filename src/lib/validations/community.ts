@@ -7,6 +7,7 @@ export const communitySchema = z.object({
         .max(18, {
             message: "Name must not contain more than 18 character(s)",
         })
+        .nonempty({ message: "Required" })
         .refine((value) => !/\s/.test(value), {
             message: "Name must not contain spaces",
         }),

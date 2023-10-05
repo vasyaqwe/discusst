@@ -6,7 +6,8 @@ export const postSchema = z.object({
         .min(3, { message: "Title must contain at least 3 character(s)" })
         .max(130, {
             message: "Title must not contain more than 130 character(s)",
-        }),
+        })
+        .nonempty({ message: "Required" }),
     communityId: z.string(),
     content: z.any(),
 })

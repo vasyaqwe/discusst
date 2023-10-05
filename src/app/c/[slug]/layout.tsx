@@ -1,6 +1,5 @@
 import { JoinCommunityToggle } from "@/components/forms/join-community-toggle"
 import { Card } from "@/components/ui/card"
-import { CommunityHeader } from "@/components/ui/community-header"
 import { getAuthSession } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { formatDate } from "@/lib/utils"
@@ -60,9 +59,8 @@ export default async function Layout({
 
     return (
         <>
-            <CommunityHeader name={community?.name} />
-            <div className="mt-3 gap-4 md:mt-6 md:grid md:grid-cols-3 lg:gap-6">
-                <div className="flex flex-col gap-5 md:col-span-2">
+            <div className="gap-4 md:mt-4 md:grid md:grid-cols-3 lg:gap-6">
+                <div className="relative flex flex-col gap-5 md:col-span-2">
                     {children}
                 </div>
                 <Card
@@ -71,8 +69,8 @@ export default async function Layout({
                 >
                     <aside className="hidden md:block">
                         <div className="bg-neutral p-5 lg:p-6">
-                            <h2 className="text-xl text-neutral-foreground">
-                                About c/{community.name}
+                            <h2 className="text-2xl text-neutral-foreground">
+                                c/{community.name}
                             </h2>
                         </div>
                         <div className="p-5 lg:p-7">

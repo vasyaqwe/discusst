@@ -37,7 +37,7 @@ type OnVoteArgs = {
     commentId: string
 }
 
-export function CommentsSection({ postId }: { postId: string }) {
+function CommentsSection({ postId }: { postId: string }) {
     const { data: session } = useSession()
 
     const allCommentsQueryKey = ["posts", postId, "all-comments"]
@@ -350,7 +350,7 @@ const Comment = forwardRef<HTMLDivElement, CommentProps>(
                             user={comment.author}
                             className="mr-2 inline-block h-6 w-6 align-middle"
                         />
-                        u/{comment.author.name}{" "}
+                        u/{comment.author.username}{" "}
                         <span className="text-sm font-normal text-primary/50">
                             {formatRelativeDate(comment.createdAt)}
                         </span>
@@ -510,3 +510,5 @@ function CommentSkeleton() {
         </div>
     )
 }
+
+export { CommentsSection, CommentSkeleton }

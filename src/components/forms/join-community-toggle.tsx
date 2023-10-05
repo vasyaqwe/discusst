@@ -74,7 +74,7 @@ export function JoinCommunityToggle({
                 if (session) {
                     onToggle()
                 } else {
-                    router.push("/sign-up")
+                    router.push("/sign-in")
                 }
             }}
             {...props}
@@ -88,7 +88,7 @@ export function JoinCommunityToggle({
                 if (session) {
                     onToggle()
                 } else {
-                    router.push("/sign-up")
+                    router.push("/sign-in")
                 }
             }}
             {...props}

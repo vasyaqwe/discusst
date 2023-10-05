@@ -4,7 +4,7 @@ import { useIntersection } from "@/hooks/use-intersection"
 import { ExtendedPost } from "@/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { Post, PostSkeleton } from "@/components/post"
+import { Post, PostSkeletonContent } from "@/components/post"
 import { POSTS_INFINITE_SCROLL_COUNT, axiosInstance } from "@/config"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -16,6 +16,9 @@ import { PostVotePayload } from "@/lib/validations/post"
 import { toast } from "@/hooks/use-toast"
 import { PostVote, VoteType } from "@prisma/client"
 import { useSession } from "next-auth/react"
+import { Card } from "@/components/ui/card"
+import { MessageSquare } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type PostFeedProps = {
     communityName?: string
@@ -204,5 +207,22 @@ export function PostFeed({ communityName, initialPosts }: PostFeedProps) {
             )}
             {isFetchingNextPage && <Spinner className="mx-auto" />}
         </>
+    )
+}
+
+function PostSkeleton() {
+    return (
+        <Card
+            asChild
+            className="overflow-hidden p-0 shadow-sm md:p-0"
+        >
+            <article>
+                <PostSkeletonContent />
+                <div className="flex items-center gap-2 bg-neutral p-5 text-neutral-foreground">
+                    <MessageSquare />
+                    <Skeleton className="h-4 w-40 bg-primary/20" />
+                </div>
+            </article>
+        </Card>
     )
 }

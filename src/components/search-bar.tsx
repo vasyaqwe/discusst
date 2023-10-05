@@ -13,7 +13,7 @@ import { Community, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { Users } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 type SearchBarProps = {}
@@ -23,6 +23,7 @@ export function SearchBar({}: SearchBarProps) {
     const debouncedInput = useDebounce<string>(input, 500)
 
     const pathname = usePathname()
+    const router = useRouter()
 
     const commandRef = useRef<HTMLDivElement>(null)
 
@@ -91,6 +92,9 @@ export function SearchBar({}: SearchBarProps) {
                                 <CommandItem
                                     key={community.id}
                                     value={community.name}
+                                    onSelect={() => {
+                                        router.push(`/c/${community.name}`)
+                                    }}
                                 >
                                     <Link
                                         className="flex w-full items-center"
