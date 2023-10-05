@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { ExtendedPost } from "@/types"
@@ -7,7 +8,6 @@ import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
 import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
@@ -52,6 +52,8 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
 
     const showComments =
         pathname.includes("/post") || pathname.includes("/sign-")
+
+    const onPostDetailsPage = pathname.includes("/post")
 
     return (
         <Card
@@ -136,7 +138,11 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                         </div>
                         <div
                             ref={contentRef}
-                            className="relative max-h-[200px] overflow-clip text-sm"
+                            className={`relative text-sm ${
+                                !onPostDetailsPage
+                                    ? "max-h-[200px] overflow-clip"
+                                    : ""
+                            }`}
                         >
                             <EditorOutput
                                 renderers={{
@@ -246,16 +252,29 @@ function CustomImageRenderer({ data }: any) {
     function removeHTMLTags(input: string) {
         return input.replace(/<\/?[^>]+(>|$)/g, "")
     }
-
-    return (
-        <div className="min-h-[15rem] w-full">
-            <Image
-                fill
+    console.log(data)
+    return data.caption ? (
+        <figcaption className="mt-3 w-fit">
+            <img
                 src={data.file.url}
-                className="rounded-lg object-cover object-top"
-                alt={removeHTMLTags(data.caption) ?? "Discusst post image"}
+                className={`rounded-t-lg object-cover object-top ${
+                    data.withBorder ? "border" : ""
+                }`}
+                alt={removeHTMLTags(data.caption)}
             />
-        </div>
+            <figure
+                className=" rounded-b-lg border border-t-0 bg-white p-2 text-base"
+                dangerouslySetInnerHTML={{ __html: data.caption }}
+            ></figure>
+        </figcaption>
+    ) : (
+        <img
+            src={data.file.url}
+            className={`mt-3 rounded-lg object-cover object-top ${
+                data.withBorder ? "border" : ""
+            }`}
+            alt={"Discusst post image"}
+        />
     )
 }
 

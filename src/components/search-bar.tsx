@@ -13,6 +13,7 @@ import { Community, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { Users } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 type SearchBarProps = {}
@@ -20,6 +21,8 @@ type SearchBarProps = {}
 export function SearchBar({}: SearchBarProps) {
     const [input, setInput] = useState("")
     const debouncedInput = useDebounce<string>(input, 500)
+
+    const pathname = usePathname()
 
     const commandRef = useRef<HTMLDivElement>(null)
 
@@ -49,10 +52,13 @@ export function SearchBar({}: SearchBarProps) {
     })
 
     useEffect(() => {
+        setInput("")
+    }, [pathname])
+
+    useEffect(() => {
         refetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedInput])
-    console.log(isFetching)
 
     return (
         <Command
