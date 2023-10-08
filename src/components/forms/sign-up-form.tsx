@@ -44,6 +44,7 @@ export function SignUpForm({ className, ...rest }: AuthFormProps) {
             <Button
                 className="mt-3"
                 onClick={() => login()}
+                disabled={isLoading}
             >
                 {isLoading ? <Spinner /> : <Icons.google />}
                 Sign up with Google

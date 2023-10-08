@@ -143,7 +143,6 @@ export default function Page({ params: { postId } }: PageProps) {
                     <Link
                         href={`/c/${post.community.name}`}
                         className="absolute -top-10 flex items-center gap-2 font-medium underline hover:no-underline"
-                        onClick={() => router.back()}
                     >
                         <ChevronLeft size={18} />
                         Back to community
