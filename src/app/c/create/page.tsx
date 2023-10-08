@@ -112,6 +112,7 @@ export default function Page() {
                             Create community
                         </Button>
                         <Button
+                            type="button"
                             role="link"
                             variant={"outline"}
                             onClick={() => router.back()}

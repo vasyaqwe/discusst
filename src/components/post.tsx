@@ -155,6 +155,7 @@ function PostHeader({ post }: { post: ExtendedPost }) {
     return (
         <header>
             <Link
+                prefetch={false}
                 className="underline hover:no-underline"
                 href={`/c/${communityName}`}
             >

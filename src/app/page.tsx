@@ -22,7 +22,7 @@ export default async function Home() {
         },
         take: POSTS_INFINITE_SCROLL_COUNT,
     })
-
+    console.log(posts)
     return (
         <>
             <h1 className="text-4xl font-bold">Your feed</h1>
@@ -32,7 +32,7 @@ export default async function Home() {
                 </div>
                 <Card className="self-start overflow-hidden p-0 md:p-0">
                     <div className="bg-neutral p-5 lg:p-6">
-                        <h2 className="text-neutral-foreground">
+                        <h2 className="text-2xl text-neutral-foreground">
                             <HomeIcon className="inline " />{" "}
                             <span className="align-middle">Home</span>
                         </h2>
