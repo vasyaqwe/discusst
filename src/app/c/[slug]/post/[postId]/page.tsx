@@ -8,7 +8,6 @@ import {
     PostSkeletonContent,
     PostVotes,
 } from "@/components/post"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { COMMENTS_INFINITE_SCROLL_COUNT, axiosInstance } from "@/config"
 import { toast } from "@/hooks/use-toast"
@@ -26,6 +25,9 @@ type PageProps = {
         postId: string
     }
 }
+
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
 
 export default function Page({ params: { postId } }: PageProps) {
     const { data: session } = useSession()
