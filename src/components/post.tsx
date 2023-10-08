@@ -52,18 +52,21 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                                 </Link>
                             </h3>
                         </div>
-                        <div
-                            ref={contentRef}
-                            className={`relative max-h-[200px] overflow-clip  text-sm`}
-                        >
-                            <PostContent post={post} />
-                            {(contentRef.current?.clientHeight ?? 0) === 200 ? (
-                                <div
-                                    aria-hidden={true}
-                                    className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent"
-                                />
-                            ) : null}
-                        </div>
+                        {post?.content?.blocks.length > 0 && (
+                            <div
+                                ref={contentRef}
+                                className={`relative max-h-[200px] overflow-clip  text-sm`}
+                            >
+                                <PostContent post={post} />
+                                {(contentRef.current?.clientHeight ?? 0) ===
+                                200 ? (
+                                    <div
+                                        aria-hidden={true}
+                                        className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent"
+                                    />
+                                ) : null}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -155,7 +158,6 @@ function PostHeader({ post }: { post: ExtendedPost }) {
     return (
         <header>
             <Link
-                prefetch={false}
                 className="underline hover:no-underline"
                 href={`/c/${communityName}`}
             >

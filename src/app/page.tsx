@@ -22,7 +22,7 @@ export default async function Home() {
         },
         take: POSTS_INFINITE_SCROLL_COUNT,
     })
-    console.log(posts)
+
     return (
         <>
             <h1 className="text-4xl font-bold">Your feed</h1>

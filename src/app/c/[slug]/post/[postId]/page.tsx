@@ -164,9 +164,11 @@ export default function Page({ params: { postId } }: PageProps) {
                                             {post.title}
                                         </h3>
                                     </div>
-                                    <div className={`relative text-sm `}>
-                                        <PostContent post={post} />
-                                    </div>
+                                    {post.content.blocks.length > 0 && (
+                                        <div className={`relative text-sm `}>
+                                            <PostContent post={post} />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

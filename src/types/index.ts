@@ -12,6 +12,7 @@ export type ExtendedPost = Post & {
     comments: Comment[]
     community: Community
     author: User
+    content: any
 }
 
 export type ExtendedComment = Comment & {
