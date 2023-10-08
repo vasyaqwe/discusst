@@ -157,14 +157,14 @@ export default function Page({ params: { postId } }: PageProps) {
                                     onVote={onVote}
                                     post={post}
                                 />
-                                <div className="space-y-3">
+                                <div className="w-[calc(100%-3rem)] space-y-3 ">
                                     <div className="space-y-3">
                                         <PostHeader post={post} />
                                         <h3 className="text-xl">
                                             {post.title}
                                         </h3>
                                     </div>
-                                    <div className={`relative text-sm`}>
+                                    <div className={`relative text-sm `}>
                                         <PostContent post={post} />
                                     </div>
                                 </div>

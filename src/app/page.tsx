@@ -26,7 +26,7 @@ export default async function Home() {
     return (
         <>
             <h1 className="text-4xl font-bold">Your feed</h1>
-            <div className="mt-3 grid gap-4 md:mt-6 md:grid-cols-3 lg:gap-6">
+            <div className="mt-3 flex flex-col gap-4 md:mt-6 md:grid md:grid-cols-3 lg:gap-6">
                 <div className="flex flex-col gap-5 md:col-span-2">
                     <PostFeed initialPosts={posts} />
                 </div>

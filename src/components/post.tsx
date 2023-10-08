@@ -41,7 +41,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                         onVote={onVote}
                         post={post}
                     />
-                    <div className="space-y-3">
+                    <div className="w-[calc(100%-3rem)] space-y-3">
                         <div className="space-y-3">
                             <PostHeader post={post} />
                             <h3 className="text-xl">
@@ -54,7 +54,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                         </div>
                         <div
                             ref={contentRef}
-                            className={`relative max-h-[200px] overflow-clip text-sm`}
+                            className={`relative max-h-[200px] overflow-clip  text-sm`}
                         >
                             <PostContent post={post} />
                             {(contentRef.current?.clientHeight ?? 0) === 200 ? (
@@ -242,7 +242,7 @@ function CustomImageRenderer({ data }: any) {
                 alt={removeHTMLTags(data.caption)}
             />
             <figure
-                className=" rounded-b-lg border border-t-0 bg-white p-2 text-base"
+                className=" rounded-b-lg border border-t-0 bg-white p-2 text-sm"
                 dangerouslySetInnerHTML={{ __html: data.caption }}
             ></figure>
         </figcaption>
@@ -259,8 +259,8 @@ function CustomImageRenderer({ data }: any) {
 
 function CustomCodeRenderer({ data }: any) {
     return (
-        <pre className="rounded-lg bg-[#2d2d2d] p-4">
-            <code className="text-sm text-[#cccccc]">{data.code}</code>
+        <pre className="mt-3 overflow-auto rounded-lg  bg-[#2d2d2d] p-4">
+            <code className="text-sm text-[#cccccc] ">{data.code}</code>
         </pre>
     )
 }
