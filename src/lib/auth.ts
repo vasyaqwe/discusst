@@ -31,9 +31,13 @@ export const authOptions: NextAuthOptions = {
             return session
         },
         async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id
+            }
+
             const dbUser = await db.user.findFirst({
                 where: {
-                    email: token.email,
+                    id: token.id,
                 },
             })
 
@@ -50,21 +54,21 @@ export const authOptions: NextAuthOptions = {
                         id: dbUser.id,
                     },
                     data: {
-                        username: nanoid(),
+                        username: nanoid(7),
                     },
                 })
             }
 
             return {
-                id: dbUser.id,
-                name: dbUser.name,
-                email: dbUser.email,
-                picture: dbUser.image,
+                id: token.id,
+                name: token.name,
+                email: token.email,
+                picture: token.picture,
                 username: dbUser.username,
             }
         },
-        redirect() {
-            return "/"
+        redirect({ baseUrl }) {
+            return baseUrl
         },
     },
 }

@@ -23,7 +23,9 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
                     referrerPolicy="no-referrer"
                 />
             ) : (
-                <AvatarFallback>{user.name}</AvatarFallback>
+                <AvatarFallback>
+                    {user.name ? user.name[0] : "U"}
+                </AvatarFallback>
             )}
         </Avatar>
     )

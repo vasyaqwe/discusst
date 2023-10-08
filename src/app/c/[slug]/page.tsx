@@ -11,6 +11,9 @@ type PageProps = {
     }
 }
 
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
+
 export default async function Page({ params: { slug } }: PageProps) {
     const session = await getAuthSession()
 

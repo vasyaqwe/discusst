@@ -4,7 +4,7 @@ import type { JWT } from "next-auth/jwt"
 type UserId = string
 
 declare module "next-auth/jwt" {
-    interface JWT {
+    interface JWT extends User {
         id: UserId
         username?: string | null
     }

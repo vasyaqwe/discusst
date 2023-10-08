@@ -138,15 +138,14 @@ export default function Page({ params: { postId } }: PageProps) {
                 <PostSkeleton />
             ) : (
                 <div className="relative mt-6 md:mt-0">
-                    <Button
-                        role="link"
-                        variant={"link"}
-                        className="absolute -top-10"
+                    <Link
+                        href={`/c/${post.community.name}`}
+                        className="absolute -top-10 flex items-center gap-2 font-medium underline hover:no-underline"
                         onClick={() => router.back()}
                     >
                         <ChevronLeft size={18} />
                         Back to community
-                    </Button>
+                    </Link>
                     <Card
                         asChild
                         className="overflow-hidden p-0 shadow-sm md:p-0"

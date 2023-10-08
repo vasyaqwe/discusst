@@ -68,6 +68,7 @@ export function SettingsForm({ session }: SettingsFormProps) {
         formData,
         zodSchema: settingsSchema,
     })
+    
     return (
         <Card
             asChild

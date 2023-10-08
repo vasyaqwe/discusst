@@ -56,6 +56,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                             ref={contentRef}
                             className={`relative max-h-[200px] overflow-clip text-sm`}
                         >
+                            <PostContent post={post} />
                             {(contentRef.current?.clientHeight ?? 0) === 200 ? (
                                 <div
                                     aria-hidden={true}
