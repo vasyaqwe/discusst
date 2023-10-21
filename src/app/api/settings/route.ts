@@ -23,7 +23,7 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         },
     })
 
-    if (duplicate) {
+    if (duplicate && duplicate.id !== session.user.id) {
         return new NextResponse(
             JSON.stringify({
                 title: "Username you entered is already taken",
@@ -35,7 +35,7 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         )
     }
 
-    const user = await db.user.update({
+    await db.user.update({
         where: {
             id: session.user.id,
         },
@@ -44,5 +44,5 @@ export const PATCH = withErrorHandling(async function (req: Request) {
         },
     })
 
-    return new NextResponse(JSON.stringify(user))
+    return new NextResponse("OK")
 })

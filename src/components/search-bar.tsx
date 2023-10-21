@@ -18,11 +18,9 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
-type SearchBarProps = {}
-
-export function SearchBar({}: SearchBarProps) {
+export function SearchBar() {
     const [input, setInput] = useState("")
-    const debouncedInput = useDebounce<string>(input, 500)
+    const debouncedInput = useDebounce<string>(input, 400)
 
     const router = useRouter()
 
