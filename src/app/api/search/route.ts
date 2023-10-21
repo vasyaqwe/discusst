@@ -14,10 +14,6 @@ export const GET = withErrorHandling(async function (req: Request) {
                 startsWith: q,
             },
         },
-        include: {
-            _count: true,
-        },
-        take: 5,
     })
 
     return new NextResponse(JSON.stringify(results))

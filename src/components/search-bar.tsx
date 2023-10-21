@@ -37,10 +37,7 @@ export function SearchBar() {
 
             const { data } = await axiosInstance.get(`/search?q=${input}`)
 
-            return data as Community[] &
-                {
-                    _count: Prisma.CommentCountOutputType
-                }[]
+            return data as Community[]
         },
         {
             enabled: false,
