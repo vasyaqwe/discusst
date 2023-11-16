@@ -12,8 +12,11 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
     title: "Discusst",
     description: "Discuss it. Discuss everything. Next.js 13 Reddit clone.",
-    viewport:
-        "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+}
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
 }
 
 export default function RootLayout({

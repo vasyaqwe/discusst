@@ -193,7 +193,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
                     {errors.title && <ErrorMessage error={errors.title} />}
                     <div
                         id="editor"
-                        className="min-h-[8rem] px-12 py-5"
+                        className="min-h-[8rem] px-2 py-5 sm:px-12"
                     />
                 </div>
             </Card>

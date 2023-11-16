@@ -93,7 +93,6 @@ export function CreateCommentForm({ postId }: CreateCommentFormProps) {
                                 body: e.target.value,
                             }))
                         }
-                        autoFocus
                         placeholder="Type your comment here..."
                         className="w-full resize-none "
                     />

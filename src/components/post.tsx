@@ -36,7 +36,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
             className="overflow-hidden p-0 shadow-sm md:p-0"
         >
             <article ref={ref}>
-                <div className="flex gap-3 p-4">
+                <div className="flex gap-3 p-3 md:p-4">
                     <PostVotes
                         onVote={onVote}
                         post={post}
@@ -70,7 +70,7 @@ const Post = forwardRef<HTMLElement, PostProps>(({ post, onVote }, ref) => {
                     </div>
                 </div>
 
-                <div className="bg-neutral px-4 py-3 text-neutral-foreground">
+                <div className="bg-neutral px-3 py-3 text-neutral-foreground md:px-4">
                     <Link
                         href={`/c/${communityName}/post/${post.id}`}
                         className="flex items-center gap-2"
@@ -123,6 +123,7 @@ function PostVotes({
                 className="flex-shrink-0"
             >
                 <ArrowBigUp
+                    size={23}
                     className={upVoted ? "fill-accent stroke-accent" : ""}
                 />
             </Toggle>
@@ -143,6 +144,7 @@ function PostVotes({
                 className="flex-shrink-0"
             >
                 <ArrowBigDown
+                    size={23}
                     className={
                         downVoted ? "fill-secondary stroke-secondary" : ""
                     }

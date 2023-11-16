@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { startTransition, useEffect, useRef, useState } from "react"
 
 export function SearchBar() {
     const [input, setInput] = useState("")
@@ -85,14 +85,15 @@ export function SearchBar() {
                                     key={community.id}
                                     value={community.name}
                                     onSelect={() => {
-                                        router.push(`/c/${community.name}`)
-                                        setInput("")
+                                        startTransition(() => {
+                                            router.push(`/c/${community.name}`)
+                                            setInput("")
+                                        })
                                     }}
                                 >
                                     <Link
                                         className="flex w-full items-center"
                                         href={`/c/${community.name}`}
-                                        onClick={() => setInput("")}
                                     >
                                         <Users
                                             className="mr-2"

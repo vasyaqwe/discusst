@@ -39,6 +39,9 @@ export default async function Page({ params: { slug } }: PageProps) {
 
     return (
         <>
+            <h2 className="text-2xl text-neutral-foreground md:hidden">
+                c/{community.name}
+            </h2>
             <CreatePostCta session={session} />
             <PostFeed
                 initialPosts={community.posts}
