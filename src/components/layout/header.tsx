@@ -30,7 +30,12 @@ export async function Header() {
                         className="flex-shrink-0"
                         asChild
                     >
-                        <Link href={"/sign-in"}>Sign in</Link>
+                        <Link
+                            scroll={false}
+                            href={"/sign-in"}
+                        >
+                            Sign in
+                        </Link>
                     </Button>
                 )}
             </div>

@@ -6,15 +6,16 @@ import { useMutation } from "@tanstack/react-query"
 import { signIn } from "next-auth/react"
 import { useToast } from "@/hooks/use-toast"
 import { Spinner } from "@/components/ui/spinner"
-import Link from "next/link"
 import logo from "@public/logo.svg"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 type AuthFormProps = React.ComponentProps<"div">
 
 export function SignUpForm({ className, ...rest }: AuthFormProps) {
     const { toast } = useToast()
+    const router = useRouter()
 
     const { isLoading, mutate: login } = useMutation(() => signIn("google"), {
         onError: () => {
@@ -51,12 +52,14 @@ export function SignUpForm({ className, ...rest }: AuthFormProps) {
             </Button>
             <p className="mt-4 text-muted-foreground">
                 Already have an account?{" "}
-                <Link
+                <Button
+                    variant={"link"}
+                    role="link"
+                    onClick={() => router.replace("/sign-in")}
                     className="underline hover:no-underline"
-                    href={"/sign-in"}
                 >
                     Sign in
-                </Link>
+                </Button>
             </p>
         </div>
     )
