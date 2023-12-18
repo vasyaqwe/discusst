@@ -8,7 +8,7 @@ import Link from "next/link"
 import { formatRelativeDate } from "@/lib/utils"
 import { ArrowBigDown, ArrowBigUp, MessageSquare } from "lucide-react"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { Toggle } from "@/components/ui/toggle"
@@ -156,16 +156,21 @@ function PostVotes({
 
 function PostHeader({ post }: { post: ExtendedPost }) {
     const communityName = post.community.name
+    const pathname = usePathname()
 
     return (
         <header>
-            <Link
-                className="underline hover:no-underline"
-                href={`/c/${communityName}`}
-            >
-                c/{communityName}
-            </Link>{" "}
-            •{" "}
+            {!pathname.includes(`/c/${communityName}`) && (
+                <>
+                    <Link
+                        className="underline hover:no-underline"
+                        href={`/c/${communityName}`}
+                    >
+                        c/{communityName}
+                    </Link>{" "}
+                    •{" "}
+                </>
+            )}
             <span className="text-sm text-primary/50">
                 Posted by u/{post.author.username}{" "}
                 <UserAvatar
