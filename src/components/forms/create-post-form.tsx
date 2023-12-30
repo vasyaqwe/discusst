@@ -6,7 +6,7 @@ import type EditorJS from "@editorjs/editorjs"
 import { uploadFiles } from "@/lib/uploadthing"
 import { CreatePostPayload, postSchema } from "@/lib/validations/post"
 import { useFormValidation } from "@/hooks/use-form-validation"
-import { useMutation } from "@tanstack/react-query"
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import { toast } from "@/hooks/use-toast"
 import { usePathname, useRouter } from "next/navigation"
@@ -25,6 +25,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
     })
 
     const [isMounted, setIsMounted] = useState(false)
+    const queryClient = useQueryClient()
 
     const ref = useRef<EditorJS>()
 
@@ -147,6 +148,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
 
                 router.push(newPathname)
                 router.refresh()
+                queryClient.invalidateQueries(["posts"])
 
                 toast({
                     title: "Post created.",
